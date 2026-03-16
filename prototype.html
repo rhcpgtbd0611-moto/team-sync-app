@@ -1,0 +1,1218 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>TeamSync</title>
+  <style>
+    :root {
+      --bg-base:    #0f1117;
+      --bg-card:    #1a1d27;
+      --bg-card2:   #21253a;
+      --bg-hover:   #252a3d;
+      --border:     rgba(255,255,255,.08);
+      --border-mid: rgba(255,255,255,.14);
+      --tx-primary:   #e8eaf2;
+      --tx-secondary: #8b90a8;
+      --tx-muted:     #555a72;
+      --sig-red-bg:     rgba(239,68,68,.18);
+      --sig-red-text:   #f87171;
+      --sig-red-dot:    #ef4444;
+      --sig-yellow-bg:  rgba(245,158,11,.18);
+      --sig-yellow-text:#fbbf24;
+      --sig-yellow-dot: #f59e0b;
+      --cat-design:    #f97316;
+      --cat-kpi:       #22c55e;
+      --cat-shomu:     #fde68a;
+      --cat-other:     #6b7280;
+      --cat-mtg-all:   #c4b5fd;
+      --cat-mtg-cross: #0891b2;
+      --cat-mtg-own:   #fb7185;
+      --cat-private:   #374151;
+      --nav-h: 52px;
+      --bottom-nav-h: 60px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif;background:var(--bg-base);color:var(--tx-primary);font-size:14px;min-height:100vh;padding-bottom:var(--bottom-nav-h);}
+
+    /* ===== PC TOP NAV ===== */
+    .pc-nav{height:var(--nav-h);display:flex;align-items:center;background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 24px;gap:4px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.4);}
+    .nav-logo{font-size:15px;font-weight:800;color:var(--tx-primary);letter-spacing:.04em;margin-right:24px;display:flex;align-items:center;gap:8px;}
+    .nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--cat-design);}
+    .nav-btn{padding:8px 16px;border:none;background:none;font-size:13px;font-weight:500;color:var(--tx-secondary);cursor:pointer;border-radius:8px;transition:all .15s;}
+    .nav-btn.active{color:var(--tx-primary);background:var(--bg-hover);}
+    .nav-btn:hover:not(.active){color:var(--tx-primary);background:rgba(255,255,255,.05);}
+
+    /* ===== MOBILE BOTTOM NAV ===== */
+    .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav-h);background:var(--bg-card);border-top:1px solid var(--border);z-index:200;padding:0 8px;}
+    .mob-nav-inner{display:flex;height:100%;align-items:center;}
+    .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 4px;border:none;background:none;cursor:pointer;color:var(--tx-muted);transition:color .15s;border-radius:10px;}
+    .mob-nav-btn.active{color:#fb923c;}
+    .mob-nav-btn .mni{font-size:20px;line-height:1;}
+    .mob-nav-btn .mnl{font-size:10px;font-weight:600;letter-spacing:.02em;}
+
+    /* ===== PAGE ===== */
+    .page{display:none;}
+    .page.active{display:block;}
+    .page-inner{padding:24px 28px;max-width:1500px;margin:0 auto;}
+    .page-title{font-size:18px;font-weight:700;margin-bottom:20px;color:var(--tx-primary);}
+
+    /* ===== SIGNAL BADGES ===== */
+    /* 定義見直し：なし=順調、黄=声かけてほしい、赤=止まっている */
+    .sig-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+    .signal-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .sig-red{background:var(--sig-red-bg);color:var(--sig-red-text);}
+    .sig-red .signal-dot{background:var(--sig-red-dot);box-shadow:0 0 5px var(--sig-red-dot);}
+    .sig-yellow{background:var(--sig-yellow-bg);color:var(--sig-yellow-text);}
+    .sig-yellow .signal-dot{background:var(--sig-yellow-dot);box-shadow:0 0 5px var(--sig-yellow-dot);}
+    .sig-none{background:rgba(255,255,255,.05);color:var(--tx-muted);}
+    .sig-none .signal-dot{background:var(--tx-muted);}
+    .scb-red{background:var(--sig-red-bg);color:var(--sig-red-text);font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;}
+    .scb-yellow{background:var(--sig-yellow-bg);color:var(--sig-yellow-text);font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;}
+
+    /* ===== CATEGORY COLORS ===== */
+    .cat-bg-design   {background:rgba(249,115,22,.15);}
+    .cat-bg-kpi      {background:rgba(34,197,94,.15);}
+    .cat-bg-shomu    {background:rgba(253,230,138,.12);}
+    .cat-bg-other    {background:rgba(107,114,128,.15);}
+    .cat-bg-mtg-all  {background:rgba(196,181,253,.15);}
+    .cat-bg-mtg-cross{background:rgba(8,145,178,.18);}
+    .cat-bg-mtg-own  {background:rgba(251,113,133,.15);}
+    .cat-bg-private  {background:rgba(55,65,81,.40);}
+    .cat-tx-design   {color:#fb923c;}
+    .cat-tx-kpi      {color:#4ade80;}
+    .cat-tx-shomu    {color:#fcd34d;}
+    .cat-tx-other    {color:#9ca3af;}
+    .cat-tx-mtg-all  {color:#c4b5fd;}
+    .cat-tx-mtg-cross{color:#22d3ee;}
+    .cat-tx-mtg-own  {color:#fb7185;}
+    .cat-tx-private  {color:#9ca3af;}
+
+    /* ===== SUMMARY BAR ===== */
+    .summary-bar{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+    .sum-card{flex:1;min-width:120px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;}
+    .sum-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .sum-icon-red{background:var(--sig-red-bg);}
+    .sum-icon-yellow{background:var(--sig-yellow-bg);}
+    .sum-icon-none{background:rgba(255,255,255,.06);}
+    .sum-label{font-size:10px;color:var(--tx-secondary);}
+    .sum-num{font-size:24px;font-weight:700;}
+    .c-red{color:var(--sig-red-text);}
+    .c-yellow{color:var(--sig-yellow-text);}
+    .c-muted{color:var(--tx-secondary);}
+
+    /* ===== HOME MEMBER COLS ===== */
+    #page-home{overflow-x:auto;}
+    .home-inner{padding:24px 28px;min-width:900px;}
+    /* セクションヘッダ */
+    .home-section-label{font-size:11px;font-weight:700;color:var(--tx-secondary);text-transform:uppercase;letter-spacing:.07em;margin:20px 0 10px;padding-left:4px;display:flex;align-items:center;gap:7px;}
+    .home-section-label::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;}
+    .hsl-today::before{background:var(--sig-red-dot);box-shadow:0 0 5px var(--sig-red-dot);}
+    .hsl-leftover::before{background:var(--sig-yellow-dot);}
+    .hsl-unscheduled::before{background:var(--tx-muted);}
+
+    .member-cols{display:flex;gap:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg-card);}
+    .member-col{flex:1;border-right:1px solid var(--border);min-width:150px;}
+    .member-col:last-child{border-right:none;}
+    .member-col-header{padding:12px 12px 8px;border-bottom:1px solid var(--border);background:var(--bg-card2);}
+    .col-avatar-row{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
+    .avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;flex-shrink:0;}
+    .col-name{font-weight:700;font-size:12px;color:var(--tx-primary);}
+    .sig-counts{display:flex;gap:4px;flex-wrap:wrap;min-height:20px;align-items:center;}
+
+    .task-list{padding:4px 0;}
+    /* セクション区切り（各メンバー列内） */
+    .task-section-divider{font-size:9px;font-weight:700;color:var(--tx-muted);text-transform:uppercase;letter-spacing:.06em;padding:6px 10px 2px;border-top:1px solid var(--border);}
+    .task-section-divider:first-child{border-top:none;}
+    .task-item{padding:8px 10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:3px;cursor:pointer;transition:background .12s;position:relative;}
+    .task-item:last-child{border-bottom:none;}
+    .task-item:hover{background:var(--bg-hover);}
+    /* 完了タスク */
+    .task-item.done{opacity:.45;}
+    .task-item.done .task-item-name{text-decoration:line-through;}
+    .task-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:5px;}
+    .task-item-name{font-size:11px;font-weight:600;color:var(--tx-primary);flex:1;line-height:1.4;}
+    .task-item-time{font-size:10px;color:var(--tx-muted);white-space:nowrap;}
+    .cat-pill{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;}
+    .cat-pill-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+    .task-item-tags{display:flex;gap:3px;flex-wrap:wrap;}
+    .tag-pill{font-size:9px;color:var(--tx-secondary);background:rgba(255,255,255,.06);border:1px solid var(--border-mid);padding:1px 5px;border-radius:8px;}
+    .no-task-msg{padding:18px 12px;font-size:11px;color:var(--tx-muted);}
+
+    /* ===== 信号インライン変更ポップオーバー ===== */
+    .sig-inline-btn{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:12px;font-size:10px;font-weight:700;cursor:pointer;border:none;transition:all .12s;position:relative;}
+    .sig-inline-btn.sig-red{background:var(--sig-red-bg);color:var(--sig-red-text);}
+    .sig-inline-btn.sig-yellow{background:var(--sig-yellow-bg);color:var(--sig-yellow-text);}
+    .sig-inline-btn.sig-none{background:rgba(255,255,255,.05);color:var(--tx-muted);}
+    .sig-popover{display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--bg-card2);border:1px solid var(--border-mid);border-radius:10px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:300;min-width:130px;}
+    .sig-popover.open{display:block;}
+    .sig-pop-item{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;transition:background .1s;white-space:nowrap;}
+    .sig-pop-item:hover{background:var(--bg-hover);}
+    .sig-pop-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+    /* ===== COMMON PANEL ===== */
+    .panel{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+    .panel-title{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--tx-primary);}
+    .panel-sub{font-size:10px;color:var(--tx-secondary);font-weight:700;margin:12px 0 7px;padding-top:10px;border-top:1px solid var(--border);text-transform:uppercase;letter-spacing:.06em;}
+
+    /* ===== FORM ===== */
+    .form-group{margin-bottom:10px;}
+    .form-label{font-size:10px;color:var(--tx-secondary);font-weight:700;margin-bottom:4px;display:block;letter-spacing:.04em;}
+    .form-select,.form-input{width:100%;padding:9px 12px;border:1px solid var(--border-mid);border-radius:8px;font-size:14px;color:var(--tx-primary);background:var(--bg-base);appearance:none;transition:border-color .15s;}
+    .form-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+    .form-select:focus,.form-input:focus{outline:none;border-color:var(--cat-design);background:var(--bg-card2);}
+    .form-select option{background:var(--bg-card2);}
+    .cat-color-badge{margin-top:5px;display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:7px;border:1px solid var(--border-mid);}
+    .cat-color-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+    .cat-color-label{font-size:11px;font-weight:700;}
+    .tags-area{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;}
+    .tag-chip{background:rgba(255,255,255,.08);color:var(--tx-primary);border:1px solid var(--border-mid);border-radius:12px;padding:3px 8px;font-size:11px;display:flex;align-items:center;gap:3px;}
+    .tag-x{cursor:pointer;color:var(--tx-muted);font-size:12px;}
+    .tag-add-row{display:flex;gap:5px;}
+    .tag-input{flex:1;padding:8px 10px;border:1px solid var(--border-mid);border-radius:7px;font-size:14px;background:var(--bg-base);color:var(--tx-primary);}
+    .tag-input:focus{outline:none;border-color:var(--cat-design);}
+    .tag-add-btn{padding:8px 11px;background:rgba(249,115,22,.2);color:#fb923c;border:1px solid rgba(249,115,22,.3);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;}
+
+    /* 信号ピッカー — 黄は「声かけてほしい」、赤は「止まっている」 */
+    .signal-picker{display:flex;gap:6px;}
+    .sig-opt{flex:1;border:2px solid var(--border-mid);border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:11px;font-weight:700;color:var(--tx-muted);background:var(--bg-base);transition:all .12s;line-height:1.3;}
+    .sig-opt .sc{width:10px;height:10px;border-radius:50%;margin:0 auto 4px;}
+    .sig-opt-none{border:2px dashed var(--border-mid);border-radius:9px;padding:9px 4px;text-align:center;cursor:pointer;font-size:11px;font-weight:700;color:var(--tx-muted);background:var(--bg-base);transition:all .12s;line-height:1.3;flex:1;}
+    .sig-opt-none .sc{width:10px;height:10px;border-radius:50%;margin:0 auto 4px;background:var(--tx-muted);}
+    .sig-opt-none.active-none{background:rgba(255,255,255,.06);color:var(--tx-secondary);border-color:var(--tx-muted);}
+    .sig-opt.active-yellow{background:var(--sig-yellow-bg);color:var(--sig-yellow-text);border-color:var(--sig-yellow-dot);}
+    .sig-opt.active-red{background:var(--sig-red-bg);color:var(--sig-red-text);border-color:var(--sig-red-dot);}
+    /* 信号ルール注釈 */
+    .sig-rule-note{font-size:10px;color:var(--tx-muted);margin-top:5px;padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.03);line-height:1.5;}
+
+    /* ===== TIMER ===== */
+    .timer-box{text-align:center;padding:18px 0 14px;}
+    .timer-digits{font-size:50px;font-weight:200;letter-spacing:4px;font-variant-numeric:tabular-nums;color:var(--tx-primary);}
+    .timer-running-label{font-size:10px;color:var(--tx-secondary);margin-top:6px;text-transform:uppercase;letter-spacing:.08em;}
+    .timer-running-task{font-size:12px;font-weight:600;color:#fb923c;margin-top:3px;}
+    .btn{flex:1;padding:11px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .12s;}
+    .btn:hover{opacity:.82;}
+    .timer-btns{display:flex;gap:7px;margin-top:12px;}
+    .btn-stop{background:rgba(239,68,68,.25);color:#f87171;border:1px solid rgba(239,68,68,.3);}
+    .btn-pause{background:rgba(255,255,255,.07);color:var(--tx-secondary);border:1px solid var(--border-mid);}
+    .btn-ghost{background:rgba(255,255,255,.06);color:var(--tx-secondary);border:1px solid var(--border-mid);flex:none;padding:9px 13px;white-space:nowrap;}
+    .btn-orange{background:rgba(249,115,22,.25);color:#fb923c;border:1px solid rgba(249,115,22,.3);width:100%;margin-top:9px;padding:12px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;}
+
+    /* ===== MANUAL ADD ===== */
+    .manual-toggle{display:flex;align-items:center;gap:7px;padding:10px 13px;background:var(--bg-base);border-radius:9px;cursor:pointer;border:1px solid var(--border-mid);font-size:13px;font-weight:600;color:var(--tx-secondary);transition:all .12s;}
+    .manual-toggle:hover{border-color:rgba(249,115,22,.4);color:#fb923c;}
+    .manual-form{margin-top:10px;display:none;}
+    .manual-form.open{display:block;}
+    .note-area{width:100%;padding:9px 12px;border:1px solid var(--border-mid);border-radius:8px;font-size:13px;resize:vertical;font-family:inherit;background:var(--bg-base);color:var(--tx-primary);min-height:56px;}
+    .note-area:focus{outline:none;border-color:var(--cat-design);}
+    .cal-note{margin-top:7px;padding:8px 11px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:7px;font-size:10px;color:#fcd34d;}
+
+    /* ===== RERECORD ===== */
+    .rerecord-list{display:flex;flex-direction:column;gap:5px;}
+    .rerecord-item{border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .12s;}
+    .rerecord-item:hover{border-color:var(--border-mid);}
+    .rr-main{display:flex;align-items:center;gap:9px;padding:10px 12px;cursor:pointer;transition:background .12s;}
+    .rr-main:hover{background:var(--bg-hover);}
+    .rr-cat-bar{width:4px;height:30px;border-radius:2px;flex-shrink:0;}
+    .rr-task{font-size:12px;font-weight:600;color:var(--tx-primary);}
+    .rr-sub{font-size:10px;color:var(--tx-secondary);margin-top:1px;}
+    .rr-right{margin-left:auto;flex-shrink:0;display:flex;align-items:center;gap:6px;}
+    .rr-time{font-size:10px;color:var(--tx-muted);}
+    .rr-btn{padding:5px 10px;background:rgba(249,115,22,.2);color:#fb923c;border:1px solid rgba(249,115,22,.3);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;}
+    .rr-note-toggle{padding:4px 7px;background:none;border:1px solid var(--border-mid);border-radius:5px;font-size:10px;color:var(--tx-muted);cursor:pointer;white-space:nowrap;transition:all .12s;}
+    .rr-note-toggle:hover{border-color:rgba(249,115,22,.4);color:#fb923c;}
+    .rr-note-toggle.has-note{border-color:rgba(245,158,11,.4);color:var(--sig-yellow-text);background:var(--sig-yellow-bg);}
+    .rr-memo-area{display:none;padding:0 12px 10px 25px;background:var(--bg-base);border-top:1px solid var(--border);}
+    .rr-memo-area.open{display:block;}
+    .rr-memo-existing{font-size:11px;color:var(--tx-secondary);padding:7px 9px;background:rgba(245,158,11,.08);border-left:3px solid var(--sig-yellow-dot);border-radius:4px;margin:9px 0 5px;white-space:pre-wrap;}
+    .rr-memo-input{width:100%;padding:7px 9px;border:1px solid var(--border-mid);border-radius:6px;font-size:12px;resize:vertical;font-family:inherit;background:var(--bg-card2);color:var(--tx-primary);min-height:48px;margin-top:8px;}
+    .rr-memo-input:focus{outline:none;border-color:rgba(249,115,22,.4);}
+    .rr-memo-save{margin-top:5px;padding:5px 12px;background:rgba(249,115,22,.2);color:#fb923c;border:1px solid rgba(249,115,22,.3);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;}
+
+    /* ===== CALENDAR ===== */
+    .cal-topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+    .cal-nav{background:var(--bg-card2);border:1px solid var(--border);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--tx-secondary);}
+    .cal-week-label{font-size:14px;font-weight:700;color:var(--tx-primary);}
+    .cal-today-btn{margin-left:auto;padding:6px 12px;background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.25);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;}
+    .cal-member-tabs{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;}
+    .cal-mb-tab{display:flex;align-items:center;gap:5px;padding:6px 13px;border-radius:20px;border:1px solid var(--border-mid);background:var(--bg-card);font-size:12px;font-weight:600;cursor:pointer;color:var(--tx-secondary);transition:all .12s;}
+    .cal-mb-tab .cal-mb-dot{width:6px;height:6px;border-radius:50%;}
+    .cal-mb-tab.active{background:rgba(249,115,22,.15);color:#fb923c;border-color:rgba(249,115,22,.35);}
+    .cal-mb-tab:hover:not(.active){background:var(--bg-hover);color:var(--tx-primary);}
+    .cal-member-panel{display:none;}
+    .cal-member-panel.active{display:block;}
+    .gcal-outer{background:var(--bg-card);border-radius:14px;overflow:hidden;border:1px solid var(--border);}
+    .gcal-header-row{display:grid;grid-template-columns:48px repeat(7,1fr);border-bottom:1px solid var(--border);background:var(--bg-card2);position:sticky;top:var(--nav-h);z-index:10;}
+    .gcal-col-head{padding:9px 5px;text-align:center;font-size:10px;font-weight:700;color:var(--tx-secondary);border-right:1px solid var(--border);}
+    .gcal-col-head:last-child{border-right:none;}
+    .gcal-col-head.today{background:rgba(249,115,22,.1);color:#fb923c;}
+    .gcal-col-head .col-date{font-size:9px;font-weight:400;color:var(--tx-muted);margin-top:1px;}
+    .gcal-col-head.today .col-date{color:rgba(249,115,22,.6);}
+    .gcal-body{overflow-y:auto;max-height:420px;}
+    .gcal-time-grid{display:grid;grid-template-columns:48px repeat(7,1fr);position:relative;}
+    .gcal-hour-label{height:52px;display:flex;align-items:flex-start;justify-content:flex-end;padding:4px 6px 0 0;font-size:10px;color:var(--tx-muted);border-right:1px solid var(--border);}
+    .gcal-day-col{border-right:1px solid var(--border);position:relative;}
+    .gcal-day-col:last-child{border-right:none;}
+    .gcal-day-col.today-col{background:rgba(249,115,22,.03);}
+    .gcal-hour-slot{height:52px;border-bottom:1px solid rgba(255,255,255,.04);position:relative;}
+    .gcal-half-line{position:absolute;top:26px;left:0;right:0;border-top:1px dashed rgba(255,255,255,.04);}
+    .gcal-event{position:absolute;left:2px;right:2px;border-radius:5px;padding:3px 4px;font-size:10px;font-weight:600;overflow:hidden;cursor:pointer;transition:opacity .12s;line-height:1.3;border-left-width:3px;border-left-style:solid;}
+    .gcal-event:hover{opacity:.75;}
+    .gcal-event.ev-design   {background:rgba(249,115,22,.22);color:#fb923c;border-left-color:#f97316;}
+    .gcal-event.ev-kpi      {background:rgba(34,197,94,.18);color:#4ade80;border-left-color:#22c55e;}
+    .gcal-event.ev-shomu    {background:rgba(253,230,138,.14);color:#fcd34d;border-left-color:#fde68a;}
+    .gcal-event.ev-other    {background:rgba(107,114,128,.20);color:#9ca3af;border-left-color:#6b7280;}
+    .gcal-event.ev-mtg-all  {background:rgba(196,181,253,.18);color:#c4b5fd;border-left-color:#a78bfa;}
+    .gcal-event.ev-mtg-cross{background:rgba(8,145,178,.22);color:#22d3ee;border-left-color:#0891b2;}
+    .gcal-event.ev-mtg-own  {background:rgba(251,113,133,.18);color:#fb7185;border-left-color:#fb7185;}
+    .gcal-event.ev-private  {background:rgba(55,65,81,.50);color:#6b7280;border-left-color:#374151;}
+    /* 完了イベント */
+    .gcal-event.done{opacity:.35;}
+    .gcal-unreg{margin-top:14px;padding:13px 15px;background:var(--bg-card);border-radius:12px;border:1px solid var(--border);}
+    .gcal-unreg-title{font-size:10px;font-weight:700;color:var(--tx-secondary);margin-bottom:9px;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.06em;}
+    .gcal-unreg-title::before{content:'';display:inline-block;width:6px;height:6px;background:var(--sig-yellow-dot);border-radius:50%;box-shadow:0 0 5px var(--sig-yellow-dot);}
+    .unreg-chips{display:flex;gap:7px;flex-wrap:wrap;}
+    .unreg-chip{display:flex;align-items:center;gap:6px;background:var(--bg-base);border:1px dashed var(--border-mid);border-radius:9px;padding:6px 11px;font-size:11px;cursor:pointer;color:var(--tx-secondary);transition:all .12s;}
+    .unreg-chip:hover{border-color:rgba(249,115,22,.4);color:#fb923c;background:rgba(249,115,22,.05);}
+    .unreg-plus{font-size:13px;color:#fb923c;font-weight:700;}
+    .unreg-chip-name{font-weight:600;color:var(--tx-primary);}
+    .unreg-chip-sub{font-size:9px;color:var(--tx-muted);}
+
+    /* ===== ANALYSIS ===== */
+    .analysis-tabs-row{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+    .mb-tab{padding:6px 14px;border-radius:20px;border:1px solid var(--border-mid);background:var(--bg-card);font-size:12px;font-weight:600;cursor:pointer;color:var(--tx-secondary);transition:all .12s;}
+    .mb-tab.active{background:rgba(249,115,22,.18);color:#fb923c;border-color:rgba(249,115,22,.35);}
+    .mb-tab:hover:not(.active){background:var(--bg-hover);color:var(--tx-primary);}
+    /* 期間切り替え */
+    .period-toggle{display:flex;background:var(--bg-card2);border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-left:auto;}
+    .period-btn{padding:6px 14px;font-size:11px;font-weight:700;border:none;background:none;color:var(--tx-muted);cursor:pointer;transition:all .12s;}
+    .period-btn.active{background:rgba(249,115,22,.2);color:#fb923c;}
+
+    .analysis-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    .analysis-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+    .ac-title{font-size:11px;font-weight:700;color:var(--tx-secondary);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em;}
+    .kpi-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+    .kpi-box{flex:1;min-width:100px;background:var(--bg-card2);border:1px solid var(--border);border-radius:10px;padding:13px;text-align:center;}
+    .kpi-val{font-size:22px;font-weight:700;color:var(--tx-primary);}
+    .kpi-label{font-size:10px;color:var(--tx-muted);margin-top:2px;}
+    .bar-list{display:flex;flex-direction:column;gap:10px;}
+    .bar-row{display:flex;flex-direction:column;gap:3px;}
+    .bar-label-row{display:flex;justify-content:space-between;align-items:center;}
+    .bar-label{font-size:11px;font-weight:600;color:var(--tx-primary);display:flex;align-items:center;gap:4px;}
+    .bar-pct{font-size:11px;color:var(--tx-secondary);}
+    .bar-track{height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:3px;}
+    .bar-cat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .tag-sig-rows{display:flex;flex-direction:column;gap:6px;}
+    .tag-sig-item{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:9px;background:var(--bg-card2);border:1px solid var(--border);}
+    .tag-sig-name{flex:1;font-size:12px;font-weight:600;color:var(--tx-primary);}
+    .tag-sig-time{font-size:10px;color:var(--tx-muted);white-space:nowrap;}
+
+    .record-wrap{padding:24px 28px;max-width:1100px;margin:0 auto;}
+    .record-layout{display:grid;grid-template-columns:360px 1fr;gap:16px;}
+    .empty-state{text-align:center;padding:50px 20px;color:var(--tx-muted);}
+    .empty-state .es-icon{font-size:36px;margin-bottom:10px;}
+    .empty-state .es-title{font-size:14px;font-weight:600;color:var(--tx-secondary);}
+    .empty-state .es-sub{font-size:12px;margin-top:5px;}
+
+    ::-webkit-scrollbar{width:5px;height:5px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;}
+
+    /* ===== RESPONSIVE: TABLET ===== */
+    @media(max-width:1000px){
+      .analysis-grid-3{grid-template-columns:1fr 1fr;}
+    }
+
+    /* ===== RESPONSIVE: MOBILE ===== */
+    @media(max-width:700px){
+      body{padding-bottom:var(--bottom-nav-h);}
+      .pc-nav{display:none;}
+      .mob-nav{display:flex;}
+
+      .home-inner{padding:16px;min-width:unset;}
+      #page-home{overflow-x:unset;}
+      /* モバイルホーム：縦積み */
+      .member-cols{flex-direction:column;border-radius:12px;}
+      .member-col{border-right:none;border-bottom:1px solid var(--border);min-width:unset;}
+      .member-col:last-child{border-bottom:none;}
+      /* モバイルではメンバーカラムをアコーディオン風に */
+      .member-col-header{cursor:pointer;}
+      .member-col .task-list{display:none;}
+      .member-col.expanded .task-list{display:block;}
+
+      .page-inner{padding:16px;}
+      .record-wrap{padding:16px;}
+      .record-layout{grid-template-columns:1fr;}
+      .analysis-grid-3{grid-template-columns:1fr;}
+      .summary-bar{gap:8px;}
+      .sum-card{min-width:calc(50% - 4px);flex:unset;}
+      .kpi-row{gap:7px;}
+      .kpi-box{min-width:calc(50% - 4px);}
+      .cal-member-tabs{gap:4px;}
+      .cal-mb-tab{padding:5px 10px;font-size:11px;}
+      .gcal-body{max-height:320px;}
+      .period-toggle{margin-left:0;margin-top:8px;}
+      .analysis-tabs-row{gap:4px;}
+
+      /* モバイルのタスク記録：大きめタップターゲット */
+      .form-select,.form-input,.tag-input{font-size:16px;} /* iOSズーム防止 */
+      .sig-opt,.sig-opt-none{padding:12px 4px;}
+      .btn-orange{padding:14px;}
+      .timer-digits{font-size:44px;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- PC NAV -->
+<nav class="pc-nav">
+  <div class="nav-logo"><div class="nav-logo-dot"></div>TeamSync</div>
+  <button class="nav-btn active" onclick="showPage('home',this)">ホーム</button>
+  <button class="nav-btn" onclick="showPage('record',this)">タスク記録</button>
+  <button class="nav-btn" onclick="showPage('calendar',this)">カレンダー</button>
+  <button class="nav-btn" onclick="showPage('analysis',this)">分析</button>
+</nav>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-inner">
+    <button class="mob-nav-btn active" onclick="showPage('home',this,'mob')">
+      <span class="mni">🏠</span><span class="mnl">ホーム</span>
+    </button>
+    <button class="mob-nav-btn" onclick="showPage('record',this,'mob')">
+      <span class="mni">⏱</span><span class="mnl">記録</span>
+    </button>
+    <button class="mob-nav-btn" onclick="showPage('calendar',this,'mob')">
+      <span class="mni">📅</span><span class="mnl">カレンダー</span>
+    </button>
+    <button class="mob-nav-btn" onclick="showPage('analysis',this,'mob')">
+      <span class="mni">📊</span><span class="mnl">分析</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ========== ホーム ========== -->
+<div id="page-home" class="page active">
+  <div class="home-inner">
+    <div class="page-title">チーム状況</div>
+    <div class="summary-bar">
+      <div class="sum-card"><div class="sum-icon sum-icon-red">🔴</div><div><div class="sum-label">止まっている</div><div class="sum-num c-red">2</div></div></div>
+      <div class="sum-card"><div class="sum-icon sum-icon-yellow">🟡</div><div><div class="sum-label">声かけてほしい</div><div class="sum-num c-yellow">3</div></div></div>
+      <div class="sum-card"><div class="sum-icon sum-icon-none">✓</div><div><div class="sum-label">信号なし（順調）</div><div class="sum-num c-muted">6</div></div></div>
+    </div>
+
+    <div class="home-section-label hsl-today">今日 進行中・信号あり</div>
+    <div class="member-cols" id="cols-today">
+
+      <!-- 野間 -->
+      <div class="member-col expanded">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#6366f1;">浜</div><div><div class="col-name">浜田 涼介</div></div></div>
+          <div class="sig-counts"><span class="scb-red">🔴 1</span></div>
+        </div>
+        <div class="task-list">
+          <div class="task-section-divider">進行中</div>
+          <div class="task-item">
+            <div class="task-item-top">
+              <span class="task-item-name">LPデザイン修正</span>
+              <button class="sig-inline-btn sig-red" onclick="openSigPop(event,this)">
+                <span class="signal-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている
+                <div class="sig-popover" id="pop1">
+                  <div class="sig-pop-item" onclick="setSig(event,'pop1','none')"><span class="sig-pop-dot" style="background:var(--tx-muted);"></span>信号なし（順調）</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop1','yellow')"><span class="sig-pop-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけてほしい</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop1','red')"><span class="sig-pop-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている</div>
+                </div>
+              </button>
+            </div>
+            <span class="cat-pill cat-bg-design cat-tx-design"><span class="cat-pill-dot" style="background:var(--cat-design);"></span>デザイン作業</span>
+            <div class="task-item-tags"><span class="tag-pill">#CF</span><span class="tag-pill">#LP</span></div>
+            <div class="task-item-time">1h 30m</div>
+          </div>
+          <div class="task-item">
+            <div class="task-item-top"><span class="task-item-name">週次KPI集計</span>
+              <button class="sig-inline-btn sig-none" onclick="openSigPop(event,this)">
+                <span class="signal-dot"></span>—
+                <div class="sig-popover" id="pop2">
+                  <div class="sig-pop-item" onclick="setSig(event,'pop2','none')"><span class="sig-pop-dot" style="background:var(--tx-muted);"></span>信号なし（順調）</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop2','yellow')"><span class="sig-pop-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけてほしい</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop2','red')"><span class="sig-pop-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている</div>
+                </div>
+              </button>
+            </div>
+            <span class="cat-pill cat-bg-kpi cat-tx-kpi"><span class="cat-pill-dot" style="background:var(--cat-kpi);"></span>KPIタスク</span>
+            <div class="task-item-time">45m</div>
+          </div>
+          <div class="task-section-divider">完了</div>
+          <div class="task-item done">
+            <div class="task-item-top"><span class="task-item-name">部署間定例</span></div>
+            <span class="cat-pill cat-bg-mtg-cross cat-tx-mtg-cross"><span class="cat-pill-dot" style="background:var(--cat-mtg-cross);"></span>部署間MTG</span>
+            <div class="task-item-time">1h 00m ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 新妻 -->
+      <div class="member-col expanded">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#8b5cf6;">松</div><div><div class="col-name">松本 俊輔</div></div></div>
+          <div class="sig-counts"><span class="scb-yellow">🟡 1</span></div>
+        </div>
+        <div class="task-list">
+          <div class="task-section-divider">進行中</div>
+          <div class="task-item">
+            <div class="task-item-top">
+              <span class="task-item-name">CF向けバナー制作</span>
+              <button class="sig-inline-btn sig-yellow" onclick="openSigPop(event,this)">
+                <span class="signal-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけて
+                <div class="sig-popover" id="pop3">
+                  <div class="sig-pop-item" onclick="setSig(event,'pop3','none')"><span class="sig-pop-dot" style="background:var(--tx-muted);"></span>信号なし（順調）</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop3','yellow')"><span class="sig-pop-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけてほしい</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop3','red')"><span class="sig-pop-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている</div>
+                </div>
+              </button>
+            </div>
+            <span class="cat-pill cat-bg-design cat-tx-design"><span class="cat-pill-dot" style="background:var(--cat-design);"></span>デザイン作業</span>
+            <div class="task-item-tags"><span class="tag-pill">#CF</span></div>
+            <div class="task-item-time">2h 00m</div>
+          </div>
+          <div class="task-section-divider">完了</div>
+          <div class="task-item done">
+            <div class="task-item-top"><span class="task-item-name">全体KK MTG</span></div>
+            <span class="cat-pill cat-bg-mtg-all cat-tx-mtg-all"><span class="cat-pill-dot" style="background:var(--cat-mtg-all);"></span>全体MTG</span>
+            <div class="task-item-time">1h 00m ✓</div>
+          </div>
+          <div class="task-item done">
+            <div class="task-item-top"><span class="task-item-name">経費精算</span></div>
+            <span class="cat-pill cat-bg-shomu cat-tx-shomu"><span class="cat-pill-dot" style="background:var(--cat-shomu);"></span>庶務タスク</span>
+            <div class="task-item-time">30m ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 古屋 -->
+      <div class="member-col expanded">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#0891b2;">石</div><div><div class="col-name">石川 義則</div></div></div>
+          <div class="sig-counts"><span class="scb-red">🔴 1</span><span class="scb-yellow">🟡 1</span></div>
+        </div>
+        <div class="task-list">
+          <div class="task-section-divider">進行中</div>
+          <div class="task-item">
+            <div class="task-item-top">
+              <span class="task-item-name">DV向け資料作成</span>
+              <button class="sig-inline-btn sig-red" onclick="openSigPop(event,this)">
+                <span class="signal-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている
+                <div class="sig-popover" id="pop4">
+                  <div class="sig-pop-item" onclick="setSig(event,'pop4','none')"><span class="sig-pop-dot" style="background:var(--tx-muted);"></span>信号なし（順調）</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop4','yellow')"><span class="sig-pop-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけてほしい</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop4','red')"><span class="sig-pop-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている</div>
+                </div>
+              </button>
+            </div>
+            <span class="cat-pill cat-bg-design cat-tx-design"><span class="cat-pill-dot" style="background:var(--cat-design);"></span>デザイン作業</span>
+            <div class="task-item-tags"><span class="tag-pill">#DV</span></div>
+            <div class="task-item-time">—</div>
+          </div>
+          <div class="task-item">
+            <div class="task-item-top">
+              <span class="task-item-name">月次レポート更新</span>
+              <button class="sig-inline-btn sig-yellow" onclick="openSigPop(event,this)">
+                <span class="signal-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけて
+                <div class="sig-popover" id="pop5">
+                  <div class="sig-pop-item" onclick="setSig(event,'pop5','none')"><span class="sig-pop-dot" style="background:var(--tx-muted);"></span>信号なし（順調）</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop5','yellow')"><span class="sig-pop-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけてほしい</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop5','red')"><span class="sig-pop-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている</div>
+                </div>
+              </button>
+            </div>
+            <span class="cat-pill cat-bg-kpi cat-tx-kpi"><span class="cat-pill-dot" style="background:var(--cat-kpi);"></span>KPIタスク</span>
+            <div class="task-item-time">1h 10m</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 堀江 -->
+      <div class="member-col expanded">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#2563eb;">木</div><div><div class="col-name">木村 大輔</div></div></div>
+          <div class="sig-counts"><span style="font-size:10px;color:var(--tx-muted);">信号なし</span></div>
+        </div>
+        <div class="task-list">
+          <div class="task-section-divider">進行中</div>
+          <div class="task-item">
+            <div class="task-item-top"><span class="task-item-name">SNS投稿スケジュール</span>
+              <button class="sig-inline-btn sig-none" onclick="openSigPop(event,this)"><span class="signal-dot"></span>—
+                <div class="sig-popover" id="pop6">
+                  <div class="sig-pop-item" onclick="setSig(event,'pop6','none')"><span class="sig-pop-dot" style="background:var(--tx-muted);"></span>信号なし（順調）</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop6','yellow')"><span class="sig-pop-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけてほしい</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop6','red')"><span class="sig-pop-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている</div>
+                </div>
+              </button>
+            </div>
+            <span class="cat-pill cat-bg-kpi cat-tx-kpi"><span class="cat-pill-dot" style="background:var(--cat-kpi);"></span>KPIタスク</span>
+            <div class="task-item-tags"><span class="tag-pill">#SNS</span></div>
+            <div class="task-item-time">1h 20m</div>
+          </div>
+          <div class="task-section-divider">完了</div>
+          <div class="task-item done">
+            <div class="task-item-top"><span class="task-item-name">自部署朝会</span></div>
+            <span class="cat-pill cat-bg-mtg-own cat-tx-mtg-own"><span class="cat-pill-dot" style="background:var(--cat-mtg-own);"></span>自部署MTG</span>
+            <div class="task-item-time">30m ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 上田 -->
+      <div class="member-col expanded">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#059669;">藤</div><div><div class="col-name">藤田 誠一</div></div></div>
+          <div class="sig-counts"><span class="scb-yellow">🟡 1</span></div>
+        </div>
+        <div class="task-list">
+          <div class="task-section-divider">進行中</div>
+          <div class="task-item">
+            <div class="task-item-top">
+              <span class="task-item-name">KK向けデザインレビュー</span>
+              <button class="sig-inline-btn sig-yellow" onclick="openSigPop(event,this)">
+                <span class="signal-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけて
+                <div class="sig-popover" id="pop7">
+                  <div class="sig-pop-item" onclick="setSig(event,'pop7','none')"><span class="sig-pop-dot" style="background:var(--tx-muted);"></span>信号なし（順調）</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop7','yellow')"><span class="sig-pop-dot" style="background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);"></span>声かけてほしい</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop7','red')"><span class="sig-pop-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている</div>
+                </div>
+              </button>
+            </div>
+            <span class="cat-pill cat-bg-design cat-tx-design"><span class="cat-pill-dot" style="background:var(--cat-design);"></span>デザイン作業</span>
+            <div class="task-item-tags"><span class="tag-pill">#KK</span></div>
+            <div class="task-item-time">1h 40m</div>
+          </div>
+          <div class="task-section-divider">完了</div>
+          <div class="task-item done">
+            <div class="task-item-top"><span class="task-item-name">全体CF MTG</span></div>
+            <span class="cat-pill cat-bg-mtg-all cat-tx-mtg-all"><span class="cat-pill-dot" style="background:var(--cat-mtg-all);"></span>全体MTG</span>
+            <div class="task-item-time">1h 00m ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 塩崎 -->
+      <div class="member-col">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#374151;">岡</div><div><div class="col-name">岡田 健太</div></div></div>
+          <div class="sig-counts"><span style="font-size:10px;color:var(--tx-muted);">未記録</span></div>
+        </div>
+        <div class="task-list">
+          <div class="no-task-msg">本日のタスクがまだ<br>登録されていません</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 今週の積み残し -->
+    <div class="home-section-label hsl-leftover">今週の積み残し</div>
+    <div class="member-cols">
+      <div class="member-col expanded">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#0891b2;">石</div><div><div class="col-name">石川 義則</div></div></div>
+          <div class="sig-counts"><span class="scb-red">🔴 1</span></div>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-item-top"><span class="task-item-name">KK向け展示会パネル</span>
+              <button class="sig-inline-btn sig-red" onclick="openSigPop(event,this)">
+                <span class="signal-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている
+                <div class="sig-popover" id="pop8">
+                  <div class="sig-pop-item" onclick="setSig(event,'pop8','none')"><span class="sig-pop-dot" style="background:var(--tx-muted);"></span>信号なし（順調）</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop8','yellow')"><span class="sig-pop-dot" style="background:var(--sig-yellow-dot);"></span>声かけてほしい</div>
+                  <div class="sig-pop-item" onclick="setSig(event,'pop8','red')"><span class="sig-pop-dot" style="background:var(--sig-red-dot);"></span>止まっている</div>
+                </div>
+              </button>
+            </div>
+            <span class="cat-pill cat-bg-design cat-tx-design"><span class="cat-pill-dot" style="background:var(--cat-design);"></span>デザイン作業</span>
+            <div class="task-item-tags"><span class="tag-pill">#KK</span></div>
+            <div class="task-item-time">未完了 / 先週持越し</div>
+          </div>
+        </div>
+      </div>
+      <div class="member-col" style="flex:3;"></div>
+    </div>
+
+    <!-- 未時刻タスク -->
+    <div class="home-section-label hsl-unscheduled">時間未登録（手動追加）</div>
+    <div class="member-cols">
+      <div class="member-col expanded">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#6366f1;">浜</div><div><div class="col-name">浜田 涼介</div></div></div>
+          <div class="sig-counts"></div>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-item-top"><span class="task-item-name">DV打合せ対応</span></div>
+            <span class="cat-pill cat-bg-mtg-cross cat-tx-mtg-cross"><span class="cat-pill-dot" style="background:var(--cat-mtg-cross);"></span>部署間MTG</span>
+            <div class="task-item-time">📅 カレンダーに登録してください</div>
+          </div>
+        </div>
+      </div>
+      <div class="member-col expanded">
+        <div class="member-col-header" onclick="toggleCol(this)">
+          <div class="col-avatar-row"><div class="avatar" style="background:#0891b2;">石</div><div><div class="col-name">石川 義則</div></div></div>
+          <div class="sig-counts"></div>
+        </div>
+        <div class="task-list">
+          <div class="task-item">
+            <div class="task-item-top"><span class="task-item-name">KK急ぎ資料対応</span></div>
+            <span class="cat-pill cat-bg-design cat-tx-design"><span class="cat-pill-dot" style="background:var(--cat-design);"></span>デザイン作業</span>
+            <div class="task-item-time">📅 カレンダーに登録してください</div>
+          </div>
+        </div>
+      </div>
+      <div class="member-col" style="flex:2;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== タスク記録 ========== -->
+<div id="page-record" class="page">
+  <div class="record-wrap">
+    <div class="page-title">タスク記録</div>
+    <div class="record-layout">
+
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="panel">
+          <div class="panel-title">タスクを選ぶ</div>
+          <div class="form-group">
+            <label class="form-label">大分類</label>
+            <select class="form-select" id="catSelect" onchange="updateSubcat()">
+              <option value="design">デザイン作業</option>
+              <option value="kpi">KPIタスク</option>
+              <option value="shomu">庶務タスク</option>
+              <option value="other">その他のタスク</option>
+              <option value="mtg-all">全体MTG（KK、CF、DVなど）</option>
+              <option value="mtg-cross">部署間MTG</option>
+              <option value="mtg-own">自部署MTG</option>
+              <option value="private">プライベート</option>
+            </select>
+            <div id="catColorBadge" class="cat-color-badge cat-bg-design">
+              <span id="catDot" class="cat-color-dot" style="background:var(--cat-design);"></span>
+              <span id="catLabel" class="cat-color-label cat-tx-design">デザイン作業</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">中分類</label>
+            <select class="form-select" id="subcatSelect"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">タグ</label>
+            <div class="tags-area"><span class="tag-chip">#CF<span class="tag-x">×</span></span></div>
+            <div class="tag-add-row">
+              <input class="tag-input" placeholder="タグを追加（例: #KK）" />
+              <button class="tag-add-btn">+ 追加</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">信号（報連相）</label>
+            <!-- デフォルトは「なし＝順調」。タップ1回で変更。確認ステップなし -->
+            <div class="signal-picker" id="sigPicker1">
+              <div class="sig-opt-none active-none" data-color="none"><div class="sc"></div>なし<br><span style="font-size:9px;opacity:.7;">順調</span></div>
+              <div class="sig-opt" data-color="yellow"><div class="sc" style="background:var(--sig-yellow-dot);"></div>声かけて<br><span style="font-size:9px;opacity:.7;">要相談</span></div>
+              <div class="sig-opt" data-color="red"><div class="sc" style="background:var(--sig-red-dot);"></div>止まってる<br><span style="font-size:9px;opacity:.7;">緊急</span></div>
+            </div>
+            <div class="sig-rule-note">💡 信号なし = 順調の意味です。必要な時だけ変更してください。</div>
+          </div>
+          <div class="panel-sub">手動でタスクを追加する</div>
+          <div class="manual-toggle" id="manualToggle" onclick="toggleManual()">
+            <span>＋</span><span>タスクのみ追加（タイマーを使わない）</span>
+          </div>
+          <div class="manual-form" id="manualForm">
+            <div class="form-group" style="margin-top:10px;">
+              <label class="form-label">タスク名（任意）</label>
+              <input class="form-input" placeholder="例：DV向け急ぎ資料" />
+            </div>
+            <div style="display:flex;gap:7px;">
+              <div class="form-group" style="flex:1;"><label class="form-label">開始時刻</label><input class="form-input" value="14:00" /></div>
+              <div class="form-group" style="flex:1;"><label class="form-label">終了時刻</label><input class="form-input" value="14:45" /></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">メモ（任意）</label>
+              <textarea class="note-area" rows="2" placeholder="補足があれば…"></textarea>
+            </div>
+            <div class="cal-note">📅 このタスクはカレンダーに即登録されません。カレンダー画面からワンタッチ登録できます。</div>
+            <button class="btn-orange">タスクのみ追加する</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">タイマー</div>
+          <div class="timer-box">
+            <div class="timer-digits">00:47:12</div>
+            <div class="timer-running-label">現在記録中</div>
+            <div class="timer-running-task">デザイン作業 › バナー制作 ／ #CF</div>
+          </div>
+          <div class="timer-btns">
+            <button class="btn btn-pause">一時停止</button>
+            <button class="btn btn-stop">停止・保存</button>
+          </div>
+          <div class="panel-sub">時刻を修正する</div>
+          <div style="display:flex;gap:7px;">
+            <div class="form-group" style="flex:1;margin-bottom:0;"><label class="form-label">開始時刻</label><input class="form-input" value="09:30" /></div>
+            <div class="form-group" style="flex:1;margin-bottom:0;"><label class="form-label">終了時刻</label><input class="form-input" value="10:17" /></div>
+            <div style="display:flex;align-items:flex-end;"><button class="btn btn-ghost">修正</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">タスク再記録</div>
+        <div class="rerecord-list">
+          <div class="rerecord-item">
+            <div class="rr-main">
+              <div class="rr-cat-bar" style="background:var(--cat-design);"></div>
+              <div><div class="rr-task">デザイン作業 › バナー制作</div><div class="rr-sub">#CF &nbsp;#KK</div></div>
+              <div class="rr-right">
+                <div class="rr-time">昨日 2h</div>
+                <button class="rr-note-toggle has-note" onclick="toggleMemo(this)">📝 メモあり</button>
+                <button class="rr-btn">▶ 開始</button>
+              </div>
+            </div>
+            <div class="rr-memo-area">
+              <div class="rr-memo-existing">CF向けは16:9、KK向けは1:1サイズ注意。</div>
+              <textarea class="rr-memo-input" placeholder="メモを追記…"></textarea>
+              <button class="rr-memo-save">保存</button>
+            </div>
+          </div>
+          <div class="rerecord-item">
+            <div class="rr-main">
+              <div class="rr-cat-bar" style="background:var(--cat-kpi);"></div>
+              <div><div class="rr-task">KPIタスク › 週次KPI集計</div><div class="rr-sub">#KK</div></div>
+              <div class="rr-right"><div class="rr-time">月曜 45m</div><button class="rr-note-toggle" onclick="toggleMemo(this)">＋ メモ</button><button class="rr-btn">▶ 開始</button></div>
+            </div>
+            <div class="rr-memo-area"><textarea class="rr-memo-input" placeholder="メモを追加…"></textarea><button class="rr-memo-save">保存</button></div>
+          </div>
+          <div class="rerecord-item">
+            <div class="rr-main">
+              <div class="rr-cat-bar" style="background:var(--cat-mtg-all);"></div>
+              <div><div class="rr-task">全体MTG › KK定例</div><div class="rr-sub">#KK</div></div>
+              <div class="rr-right"><div class="rr-time">先週 1h</div><button class="rr-note-toggle" onclick="toggleMemo(this)">＋ メモ</button><button class="rr-btn">▶ 開始</button></div>
+            </div>
+            <div class="rr-memo-area"><textarea class="rr-memo-input" placeholder="メモを追加…"></textarea><button class="rr-memo-save">保存</button></div>
+          </div>
+          <div class="rerecord-item">
+            <div class="rr-main">
+              <div class="rr-cat-bar" style="background:var(--cat-mtg-cross);"></div>
+              <div><div class="rr-task">部署間MTG › 営業部との調整</div><div class="rr-sub">#DV</div></div>
+              <div class="rr-right"><div class="rr-time">先週 45m</div><button class="rr-note-toggle" onclick="toggleMemo(this)">＋ メモ</button><button class="rr-btn">▶ 開始</button></div>
+            </div>
+            <div class="rr-memo-area"><textarea class="rr-memo-input" placeholder="メモを追加…"></textarea><button class="rr-memo-save">保存</button></div>
+          </div>
+          <div class="rerecord-item">
+            <div class="rr-main">
+              <div class="rr-cat-bar" style="background:var(--cat-shomu);"></div>
+              <div><div class="rr-task">庶務タスク › 経費精算</div><div class="rr-sub"></div></div>
+              <div class="rr-right"><div class="rr-time">先週 30m</div><button class="rr-note-toggle" onclick="toggleMemo(this)">＋ メモ</button><button class="rr-btn">▶ 開始</button></div>
+            </div>
+            <div class="rr-memo-area"><textarea class="rr-memo-input" placeholder="メモを追加…"></textarea><button class="rr-memo-save">保存</button></div>
+          </div>
+          <div class="rerecord-item">
+            <div class="rr-main">
+              <div class="rr-cat-bar" style="background:var(--cat-mtg-own);"></div>
+              <div><div class="rr-task">自部署MTG › 朝会</div><div class="rr-sub"></div></div>
+              <div class="rr-right"><div class="rr-time">昨日 30m</div><button class="rr-note-toggle" onclick="toggleMemo(this)">＋ メモ</button><button class="rr-btn">▶ 開始</button></div>
+            </div>
+            <div class="rr-memo-area"><textarea class="rr-memo-input" placeholder="メモを追加…"></textarea><button class="rr-memo-save">保存</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 週間カレンダー ========== -->
+<div id="page-calendar" class="page">
+  <div class="page-inner">
+    <div class="page-title">週間カレンダー</div>
+    <div class="cal-topbar">
+      <button class="cal-nav">‹</button>
+      <div class="cal-week-label">2026年3月9日（月）〜 15日（日）</div>
+      <button class="cal-nav">›</button>
+      <button class="cal-today-btn">今週</button>
+    </div>
+    <div class="cal-member-tabs">
+      <button class="cal-mb-tab active" onclick="showCalMember('noma',this)"><span class="cal-mb-dot" style="background:#6366f1;"></span>野間</button>
+      <button class="cal-mb-tab" onclick="showCalMember('niizuma',this)"><span class="cal-mb-dot" style="background:#8b5cf6;"></span>新妻</button>
+      <button class="cal-mb-tab" onclick="showCalMember('furuya',this)"><span class="cal-mb-dot" style="background:#0891b2;"></span>古屋</button>
+      <button class="cal-mb-tab" onclick="showCalMember('horie',this)"><span class="cal-mb-dot" style="background:#2563eb;"></span>堀江</button>
+      <button class="cal-mb-tab" onclick="showCalMember('ueda',this)"><span class="cal-mb-dot" style="background:#059669;"></span>上田</button>
+      <button class="cal-mb-tab" onclick="showCalMember('shiozaki',this)"><span class="cal-mb-dot" style="background:#374151;"></span>塩崎</button>
+    </div>
+
+    <div id="cal-noma" class="cal-member-panel active">
+      <div class="gcal-outer"><div class="gcal-header-row" id="head-noma"></div><div class="gcal-body"><div class="gcal-time-grid" id="gcalGrid-noma"></div></div></div>
+      <div class="gcal-unreg"><div class="gcal-unreg-title">手動追加済み（時間未登録）</div><div class="unreg-chips"><div class="unreg-chip"><span class="unreg-plus">+</span><div><div class="unreg-chip-name">DV打合せ対応</div><div class="unreg-chip-sub">部署間MTG</div></div></div></div></div>
+    </div>
+    <div id="cal-niizuma" class="cal-member-panel">
+      <div class="gcal-outer"><div class="gcal-header-row" id="head-niizuma"></div><div class="gcal-body"><div class="gcal-time-grid" id="gcalGrid-niizuma"></div></div></div>
+    </div>
+    <div id="cal-furuya" class="cal-member-panel">
+      <div class="gcal-outer"><div class="gcal-header-row" id="head-furuya"></div><div class="gcal-body"><div class="gcal-time-grid" id="gcalGrid-furuya"></div></div></div>
+      <div class="gcal-unreg"><div class="gcal-unreg-title">手動追加済み（時間未登録）</div><div class="unreg-chips"><div class="unreg-chip"><span class="unreg-plus">+</span><div><div class="unreg-chip-name">KK急ぎ資料対応</div><div class="unreg-chip-sub">デザイン作業</div></div></div></div></div>
+    </div>
+    <div id="cal-horie" class="cal-member-panel">
+      <div class="gcal-outer"><div class="gcal-header-row" id="head-horie"></div><div class="gcal-body"><div class="gcal-time-grid" id="gcalGrid-horie"></div></div></div>
+    </div>
+    <div id="cal-ueda" class="cal-member-panel">
+      <div class="gcal-outer"><div class="gcal-header-row" id="head-ueda"></div><div class="gcal-body"><div class="gcal-time-grid" id="gcalGrid-ueda"></div></div></div>
+    </div>
+    <div id="cal-shiozaki" class="cal-member-panel">
+      <div class="empty-state"><div class="es-icon">📅</div><div class="es-title">今週のタスクが登録されていません</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== タスク分析 ========== -->
+<div id="page-analysis" class="page">
+  <div class="page-inner">
+    <div class="page-title">タスク分析</div>
+    <div class="analysis-tabs-row">
+      <button class="mb-tab active" onclick="showMember('all',this)">チーム全体</button>
+      <button class="mb-tab" onclick="showMember('noma',this)">野間</button>
+      <button class="mb-tab" onclick="showMember('niizuma',this)">新妻</button>
+      <button class="mb-tab" onclick="showMember('furuya',this)">古屋</button>
+      <button class="mb-tab" onclick="showMember('horie',this)">堀江</button>
+      <button class="mb-tab" onclick="showMember('ueda',this)">上田</button>
+      <button class="mb-tab" onclick="showMember('shiozaki',this)">塩崎</button>
+      <!-- 期間切り替え -->
+      <div class="period-toggle">
+        <button class="period-btn active" onclick="setPeriod('week',this)">今週</button>
+        <button class="period-btn" onclick="setPeriod('month',this)">今月</button>
+      </div>
+    </div>
+
+    <!-- 週次データ -->
+    <div id="view-week">
+      <div id="member-all">
+        <div class="kpi-row">
+          <div class="kpi-box"><div class="kpi-val">34.2h</div><div class="kpi-label">週間合計</div></div>
+          <div class="kpi-box"><div class="kpi-val">5.7h</div><div class="kpi-label">平均（1人）</div></div>
+          <div class="kpi-box"><div class="kpi-val c-red">2</div><div class="kpi-label">止まっている</div></div>
+          <div class="kpi-box"><div class="kpi-val c-yellow">3</div><div class="kpi-label">声かけてほしい</div></div>
+        </div>
+        <div class="analysis-grid-3">
+          <div class="analysis-card">
+            <div class="ac-title">大分類別 作業時間</div>
+            <div class="bar-list">
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-design);"></span>デザイン作業</span><span class="bar-pct">38% / 13.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--cat-design);opacity:.8;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-kpi);"></span>KPIタスク</span><span class="bar-pct">22% / 7.5h</span></div><div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--cat-kpi);opacity:.8;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-all);"></span>全体MTG</span><span class="bar-pct">16% / 5.5h</span></div><div class="bar-track"><div class="bar-fill" style="width:16%;background:var(--cat-mtg-all);opacity:.8;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-cross);"></span>部署間MTG</span><span class="bar-pct">10% / 3.4h</span></div><div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--cat-mtg-cross);opacity:.8;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-own);"></span>自部署MTG</span><span class="bar-pct">8% / 2.7h</span></div><div class="bar-track"><div class="bar-fill" style="width:8%;background:var(--cat-mtg-own);opacity:.8;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-shomu);"></span>庶務タスク</span><span class="bar-pct">6% / 2.1h</span></div><div class="bar-track"><div class="bar-fill" style="width:6%;background:var(--cat-shomu);opacity:.8;"></div></div></div>
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="ac-title">タグ別 作業時間と信号</div>
+            <div class="tag-sig-rows">
+              <div class="tag-sig-item"><span class="tag-sig-name">#CF</span><span class="tag-sig-time">12.0h</span><span class="sig-badge sig-red"><span class="signal-dot"></span>止まっている</span></div>
+              <div class="tag-sig-item"><span class="tag-sig-name">#KK</span><span class="tag-sig-time">9.5h</span><span class="sig-badge sig-yellow"><span class="signal-dot"></span>声かけて</span></div>
+              <div class="tag-sig-item"><span class="tag-sig-name">#DV</span><span class="tag-sig-time">7.2h</span><span class="sig-badge sig-red"><span class="signal-dot"></span>止まっている</span></div>
+              <div class="tag-sig-item"><span class="tag-sig-name">#LP</span><span class="tag-sig-time">3.8h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div>
+              <div class="tag-sig-item"><span class="tag-sig-name">#SNS</span><span class="tag-sig-time">1.7h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div>
+            </div>
+          </div>
+          <div class="analysis-card">
+            <div class="ac-title">日別 作業時間（チーム合計）</div>
+            <div class="bar-list">
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label">月 3/9</span><span class="bar-pct">7.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:78%;background:var(--cat-design);opacity:.7;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label">火 3/10</span><span class="bar-pct">8.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--cat-design);opacity:.7;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label">水 3/11</span><span class="bar-pct">6.5h</span></div><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--sig-red-dot);opacity:.7;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label">木 3/12</span><span class="bar-pct">5.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:58%;background:var(--cat-design);opacity:.7;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label">金 3/13</span><span class="bar-pct">5.9h</span></div><div class="bar-track"><div class="bar-fill" style="width:59%;background:var(--sig-yellow-dot);opacity:.7;"></div></div></div>
+              <div class="bar-row"><div class="bar-label-row"><span class="bar-label">土 3/14</span><span class="bar-pct">2.5h</span></div><div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--cat-design);opacity:.7;"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="member-noma" style="display:none;">
+        <div class="kpi-row"><div class="kpi-box"><div class="kpi-val">6.8h</div><div class="kpi-label">今週の作業時間</div></div><div class="kpi-box"><div class="kpi-val c-red">1</div><div class="kpi-label">止まっている</div></div><div class="kpi-box"><div class="kpi-val">4</div><div class="kpi-label">登録タスク数</div></div><div class="kpi-box"><div class="kpi-val">2.3h</div><div class="kpi-label">平均/日</div></div></div>
+        <div class="analysis-grid-3">
+          <div class="analysis-card"><div class="ac-title">大分類別</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-design);"></span>デザイン作業</span><span class="bar-pct">51%/3.5h</span></div><div class="bar-track"><div class="bar-fill" style="width:51%;background:var(--cat-design);opacity:.8;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-kpi);"></span>KPIタスク</span><span class="bar-pct">22%/1.5h</span></div><div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--cat-kpi);opacity:.8;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-cross);"></span>部署間MTG</span><span class="bar-pct">27%/1.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:27%;background:var(--cat-mtg-cross);opacity:.8;"></div></div></div></div></div>
+          <div class="analysis-card"><div class="ac-title">タグ別 作業時間と信号</div><div class="tag-sig-rows"><div class="tag-sig-item"><span class="tag-sig-name">#CF</span><span class="tag-sig-time">3.5h</span><span class="sig-badge sig-red"><span class="signal-dot"></span>止まっている</span></div><div class="tag-sig-item"><span class="tag-sig-name">#LP</span><span class="tag-sig-time">2.0h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div></div></div>
+          <div class="analysis-card"><div class="ac-title">日別 作業時間</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label">月</span><span class="bar-pct">1.5h</span></div><div class="bar-track"><div class="bar-fill" style="width:63%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">火</span><span class="bar-pct">1.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">水</span><span class="bar-pct">1.3h</span></div><div class="bar-track"><div class="bar-fill" style="width:54%;background:var(--sig-red-dot);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">木</span><span class="bar-pct">1.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">金</span><span class="bar-pct">1.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--cat-design);opacity:.7;"></div></div></div></div></div>
+        </div>
+      </div>
+      <div id="member-niizuma" style="display:none;"><div class="kpi-row"><div class="kpi-box"><div class="kpi-val">7.2h</div><div class="kpi-label">今週の作業時間</div></div><div class="kpi-box"><div class="kpi-val c-yellow">1</div><div class="kpi-label">声かけてほしい</div></div><div class="kpi-box"><div class="kpi-val">4</div><div class="kpi-label">登録タスク数</div></div><div class="kpi-box"><div class="kpi-val">2.4h</div><div class="kpi-label">平均/日</div></div></div><div class="analysis-grid-3"><div class="analysis-card"><div class="ac-title">大分類別</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-design);"></span>デザイン作業</span><span class="bar-pct">55%/4.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:55%;background:var(--cat-design);opacity:.8;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-all);"></span>全体MTG</span><span class="bar-pct">28%/2.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:28%;background:var(--cat-mtg-all);opacity:.8;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-shomu);"></span>庶務</span><span class="bar-pct">17%/1.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:17%;background:var(--cat-shomu);opacity:.8;"></div></div></div></div></div><div class="analysis-card"><div class="ac-title">タグ別</div><div class="tag-sig-rows"><div class="tag-sig-item"><span class="tag-sig-name">#CF</span><span class="tag-sig-time">4.0h</span><span class="sig-badge sig-yellow"><span class="signal-dot"></span>声かけて</span></div><div class="tag-sig-item"><span class="tag-sig-name">#KK</span><span class="tag-sig-time">2.0h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div></div></div><div class="analysis-card"><div class="ac-title">日別 作業時間</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label">月</span><span class="bar-pct">1.6h</span></div><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">火</span><span class="bar-pct">2.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:83%;background:var(--sig-yellow-dot);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">水</span><span class="bar-pct">1.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">木</span><span class="bar-pct">1.4h</span></div><div class="bar-track"><div class="bar-fill" style="width:58%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">金</span><span class="bar-pct">1.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--cat-design);opacity:.7;"></div></div></div></div></div></div></div>
+      <div id="member-furuya" style="display:none;"><div class="kpi-row"><div class="kpi-box"><div class="kpi-val">5.4h</div><div class="kpi-label">今週の作業時間</div></div><div class="kpi-box"><div class="kpi-val c-red">1</div><div class="kpi-label">止まっている</div></div><div class="kpi-box"><div class="kpi-val c-yellow">1</div><div class="kpi-label">声かけてほしい</div></div><div class="kpi-box"><div class="kpi-val">3</div><div class="kpi-label">登録タスク数</div></div></div><div class="analysis-grid-3"><div class="analysis-card"><div class="ac-title">大分類別</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-design);"></span>デザイン作業</span><span class="bar-pct">62%/3.3h</span></div><div class="bar-track"><div class="bar-fill" style="width:62%;background:var(--cat-design);opacity:.8;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-kpi);"></span>KPIタスク</span><span class="bar-pct">38%/2.1h</span></div><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--cat-kpi);opacity:.8;"></div></div></div></div></div><div class="analysis-card"><div class="ac-title">タグ別</div><div class="tag-sig-rows"><div class="tag-sig-item"><span class="tag-sig-name">#DV</span><span class="tag-sig-time">3.3h</span><span class="sig-badge sig-red"><span class="signal-dot"></span>止まっている</span></div><div class="tag-sig-item"><span class="tag-sig-name">#KK</span><span class="tag-sig-time">2.1h</span><span class="sig-badge sig-yellow"><span class="signal-dot"></span>声かけて</span></div></div></div><div class="analysis-card"><div class="ac-title">日別 作業時間</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label">月</span><span class="bar-pct">1.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">火</span><span class="bar-pct">1.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">水</span><span class="bar-pct">1.5h</span></div><div class="bar-track"><div class="bar-fill" style="width:63%;background:var(--sig-red-dot);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">木</span><span class="bar-pct">0.9h</span></div><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--cat-kpi);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">金</span><span class="bar-pct">0.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:33%;background:var(--cat-kpi);opacity:.7;"></div></div></div></div></div></div></div>
+      <div id="member-horie" style="display:none;"><div class="kpi-row"><div class="kpi-box"><div class="kpi-val">6.2h</div><div class="kpi-label">今週の作業時間</div></div><div class="kpi-box"><div class="kpi-val" style="color:var(--tx-secondary);">—</div><div class="kpi-label">信号なし</div></div><div class="kpi-box"><div class="kpi-val">4</div><div class="kpi-label">登録タスク数</div></div><div class="kpi-box"><div class="kpi-val">2.1h</div><div class="kpi-label">平均/日</div></div></div><div class="analysis-grid-3"><div class="analysis-card"><div class="ac-title">大分類別</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-kpi);"></span>KPIタスク</span><span class="bar-pct">48%/3.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:48%;background:var(--cat-kpi);opacity:.8;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-own);"></span>自部署MTG</span><span class="bar-pct">29%/1.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--cat-mtg-own);opacity:.8;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-shomu);"></span>庶務</span><span class="bar-pct">23%/1.4h</span></div><div class="bar-track"><div class="bar-fill" style="width:23%;background:var(--cat-shomu);opacity:.8;"></div></div></div></div></div><div class="analysis-card"><div class="ac-title">タグ別</div><div class="tag-sig-rows"><div class="tag-sig-item"><span class="tag-sig-name">#SNS</span><span class="tag-sig-time">3.0h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div><div class="tag-sig-item"><span class="tag-sig-name">#KK</span><span class="tag-sig-time">1.8h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div></div></div><div class="analysis-card"><div class="ac-title">日別 作業時間</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label">月</span><span class="bar-pct">1.4h</span></div><div class="bar-track"><div class="bar-fill" style="width:58%;background:var(--cat-kpi);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">火</span><span class="bar-pct">1.6h</span></div><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--cat-kpi);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">水</span><span class="bar-pct">1.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--cat-kpi);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">木</span><span class="bar-pct">1.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--cat-kpi);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">金</span><span class="bar-pct">1.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--cat-kpi);opacity:.7;"></div></div></div></div></div></div></div>
+      <div id="member-ueda" style="display:none;"><div class="kpi-row"><div class="kpi-box"><div class="kpi-val">5.8h</div><div class="kpi-label">今週の作業時間</div></div><div class="kpi-box"><div class="kpi-val c-yellow">1</div><div class="kpi-label">声かけてほしい</div></div><div class="kpi-box"><div class="kpi-val">3</div><div class="kpi-label">登録タスク数</div></div><div class="kpi-box"><div class="kpi-val">1.9h</div><div class="kpi-label">平均/日</div></div></div><div class="analysis-grid-3"><div class="analysis-card"><div class="ac-title">大分類別</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-design);"></span>デザイン作業</span><span class="bar-pct">65%/3.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--cat-design);opacity:.8;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-all);"></span>全体MTG</span><span class="bar-pct">35%/2.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--cat-mtg-all);opacity:.8;"></div></div></div></div></div><div class="analysis-card"><div class="ac-title">タグ別</div><div class="tag-sig-rows"><div class="tag-sig-item"><span class="tag-sig-name">#KK</span><span class="tag-sig-time">3.8h</span><span class="sig-badge sig-yellow"><span class="signal-dot"></span>声かけて</span></div><div class="tag-sig-item"><span class="tag-sig-name">#CF</span><span class="tag-sig-time">2.0h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div></div></div><div class="analysis-card"><div class="ac-title">日別 作業時間</div><div class="bar-list"><div class="bar-row"><div class="bar-label-row"><span class="bar-label">月</span><span class="bar-pct">1.3h</span></div><div class="bar-track"><div class="bar-fill" style="width:54%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">火</span><span class="bar-pct">1.6h</span></div><div class="bar-track"><div class="bar-fill" style="width:67%;background:var(--sig-yellow-dot);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">水</span><span class="bar-pct">1.0h</span></div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">木</span><span class="bar-pct">1.1h</span></div><div class="bar-track"><div class="bar-fill" style="width:46%;background:var(--cat-design);opacity:.7;"></div></div></div><div class="bar-row"><div class="bar-label-row"><span class="bar-label">金</span><span class="bar-pct">0.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:33%;background:var(--cat-design);opacity:.7;"></div></div></div></div></div></div></div>
+      <div id="member-shiozaki" style="display:none;"><div class="empty-state"><div class="es-icon">📊</div><div class="es-title">今週のタスクデータがありません</div><div class="es-sub">タスクを記録すると自動で分析されます</div></div></div>
+    </div>
+
+    <!-- 月次データ（非表示切り替え） -->
+    <div id="view-month" style="display:none;">
+      <div class="kpi-row">
+        <div class="kpi-box"><div class="kpi-val">138.5h</div><div class="kpi-label">月間合計</div></div>
+        <div class="kpi-box"><div class="kpi-val">23.1h</div><div class="kpi-label">平均（1人）</div></div>
+        <div class="kpi-box"><div class="kpi-val c-red">5</div><div class="kpi-label">止まっていた（累計）</div></div>
+        <div class="kpi-box"><div class="kpi-val c-yellow">11</div><div class="kpi-label">声かけてほしかった（累計）</div></div>
+      </div>
+      <div class="analysis-grid-3">
+        <div class="analysis-card">
+          <div class="ac-title">大分類別 作業時間（月次）</div>
+          <div class="bar-list">
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-design);"></span>デザイン作業</span><span class="bar-pct">41% / 56.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:41%;background:var(--cat-design);opacity:.8;"></div></div></div>
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-kpi);"></span>KPIタスク</span><span class="bar-pct">20% / 27.7h</span></div><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--cat-kpi);opacity:.8;"></div></div></div>
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-all);"></span>全体MTG</span><span class="bar-pct">18% / 24.9h</span></div><div class="bar-track"><div class="bar-fill" style="width:18%;background:var(--cat-mtg-all);opacity:.8;"></div></div></div>
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-cross);"></span>部署間MTG</span><span class="bar-pct">12% / 16.6h</span></div><div class="bar-track"><div class="bar-fill" style="width:12%;background:var(--cat-mtg-cross);opacity:.8;"></div></div></div>
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-mtg-own);"></span>自部署MTG</span><span class="bar-pct">6% / 8.3h</span></div><div class="bar-track"><div class="bar-fill" style="width:6%;background:var(--cat-mtg-own);opacity:.8;"></div></div></div>
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label"><span class="bar-cat-dot" style="background:var(--cat-shomu);"></span>庶務タスク</span><span class="bar-pct">3% / 4.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:3%;background:var(--cat-shomu);opacity:.8;"></div></div></div>
+          </div>
+        </div>
+        <div class="analysis-card">
+          <div class="ac-title">週別 推移（チーム合計）</div>
+          <div class="bar-list">
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label">第1週 3/3〜</span><span class="bar-pct">38.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:76%;background:var(--cat-design);opacity:.7;"></div></div></div>
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label">第2週 3/9〜</span><span class="bar-pct">34.2h</span></div><div class="bar-track"><div class="bar-fill" style="width:68%;background:var(--cat-design);opacity:.7;"></div></div></div>
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label">第3週 3/16〜</span><span class="bar-pct">36.8h</span></div><div class="bar-track"><div class="bar-fill" style="width:74%;background:var(--cat-kpi);opacity:.7;"></div></div></div>
+            <div class="bar-row"><div class="bar-label-row"><span class="bar-label">第4週 3/23〜</span><span class="bar-pct">29.3h</span></div><div class="bar-track"><div class="bar-fill" style="width:59%;background:var(--sig-yellow-dot);opacity:.7;"></div></div></div>
+          </div>
+          <div style="margin-top:10px;font-size:10px;color:var(--tx-muted);">※第4週に信号集中→月末締切の影響</div>
+        </div>
+        <div class="analysis-card">
+          <div class="ac-title">タグ別（月次・信号）</div>
+          <div class="tag-sig-rows">
+            <div class="tag-sig-item"><span class="tag-sig-name">#CF</span><span class="tag-sig-time">48.2h</span><span class="sig-badge sig-red"><span class="signal-dot"></span>止まっていた</span></div>
+            <div class="tag-sig-item"><span class="tag-sig-name">#KK</span><span class="tag-sig-time">38.0h</span><span class="sig-badge sig-yellow"><span class="signal-dot"></span>声かけ複数</span></div>
+            <div class="tag-sig-item"><span class="tag-sig-name">#DV</span><span class="tag-sig-time">28.8h</span><span class="sig-badge sig-red"><span class="signal-dot"></span>止まっていた</span></div>
+            <div class="tag-sig-item"><span class="tag-sig-name">#LP</span><span class="tag-sig-time">15.2h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div>
+            <div class="tag-sig-item"><span class="tag-sig-name">#SNS</span><span class="tag-sig-time">8.3h</span><span class="sig-badge sig-none"><span class="signal-dot"></span>順調</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ===== CAT/SUBCAT DATA ===== */
+  const CAT_DEF = {
+    design:     {label:'デザイン作業',            color:'#f97316',txCls:'cat-tx-design',   bgCls:'cat-bg-design'   },
+    kpi:        {label:'KPIタスク',               color:'#22c55e',txCls:'cat-tx-kpi',      bgCls:'cat-bg-kpi'      },
+    shomu:      {label:'庶務タスク',              color:'#fde68a',txCls:'cat-tx-shomu',    bgCls:'cat-bg-shomu'    },
+    other:      {label:'その他のタスク',          color:'#6b7280',txCls:'cat-tx-other',    bgCls:'cat-bg-other'    },
+    'mtg-all':  {label:'全体MTG（KK、CF、DVなど）',color:'#c4b5fd',txCls:'cat-tx-mtg-all', bgCls:'cat-bg-mtg-all' },
+    'mtg-cross':{label:'部署間MTG',               color:'#0891b2',txCls:'cat-tx-mtg-cross',bgCls:'cat-bg-mtg-cross'},
+    'mtg-own':  {label:'自部署MTG',               color:'#fb7185',txCls:'cat-tx-mtg-own',  bgCls:'cat-bg-mtg-own' },
+    private:    {label:'プライベート',            color:'#374151',txCls:'cat-tx-private',  bgCls:'cat-bg-private'  },
+  };
+  const SUBCAT = {
+    design:     ['カタログ・冊子デザイン','パッケージデザイン','WEBバナー・LP制作','展示会・イベント資材','プレゼン資料作成','製品撮影ディレクション','SNS用ビジュアル制作','動画・映像編集','ブランドガイドライン管理','その他デザイン作業'],
+    kpi:        ['売上・受注KPI集計','WEBアクセス解析','SNSエンゲージメント集計','カタログ配布部数管理','週次レポート作成','月次レポート作成','年間計画・目標管理','その他KPIタスク'],
+    shomu:      ['経費精算・請求処理','備品・印刷物発注','スケジュール・会議室調整','外部業者・印刷会社対応','契約書・書類管理','その他庶務'],
+    other:      ['競合・トレンド調査','技術・ツール学習','社内問い合わせ対応','その他'],
+    'mtg-all':  ['CF（全社）定例MTG','DV（全社）定例MTG','KK（全社）定例MTG','全社キックオフ','全社方針発表会','その他全体MTG'],
+    'mtg-cross':['営業部との企画調整','製品開発部との仕様確認','品質管理部との素材確認','EC・通販部門との連携','広報・PR部門との連携','海外展開チームとの連携','外部代理店・制作会社MTG','その他部署間MTG'],
+    'mtg-own':  ['部署朝会','週次振り返り','1on1（上長）','1on1（メンバー）','部署内勉強会','進捗確認MTG','その他自部署MTG'],
+    private:    ['休憩','私用対応','その他'],
+  };
+
+  function updateSubcat(){
+    const val=document.getElementById('catSelect').value;
+    document.getElementById('subcatSelect').innerHTML=SUBCAT[val].map(s=>`<option>${s}</option>`).join('');
+    const d=CAT_DEF[val];
+    const badge=document.getElementById('catColorBadge');
+    badge.className='cat-color-badge '+d.bgCls;
+    document.getElementById('catDot').style.background=d.color;
+    const lbl=document.getElementById('catLabel');
+    lbl.className='cat-color-label '+d.txCls;
+    lbl.textContent=d.label;
+  }
+  updateSubcat();
+
+  /* ===== PAGE NAVIGATION ===== */
+  function showPage(name, btn, navType){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('page-'+name).classList.add('active');
+    if(btn) btn.classList.add('active');
+    if(name==='calendar'){
+      setTimeout(()=>{
+        const body=document.querySelector('.cal-member-panel.active .gcal-body');
+        if(body) body.scrollTop=(9-START_HOUR)*HOUR_H;
+      },50);
+    }
+  }
+
+  /* ===== MEMBER TABS (analysis) ===== */
+  function showMember(id,btn){
+    document.querySelectorAll('[id^="member-"]').forEach(el=>el.style.display='none');
+    document.getElementById('member-'+id).style.display='block';
+    document.querySelectorAll('.mb-tab').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+  }
+
+  /* ===== PERIOD TOGGLE ===== */
+  function setPeriod(period,btn){
+    document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(period==='week'){
+      document.getElementById('view-week').style.display='block';
+      document.getElementById('view-month').style.display='none';
+    } else {
+      document.getElementById('view-week').style.display='none';
+      document.getElementById('view-month').style.display='block';
+    }
+  }
+
+  /* ===== SIGNAL PICKER (record page) ===== */
+  document.querySelectorAll('.signal-picker').forEach(picker=>{
+    picker.querySelectorAll('.sig-opt,.sig-opt-none').forEach(opt=>{
+      opt.addEventListener('click',()=>{
+        picker.querySelectorAll('.sig-opt').forEach(o=>o.className='sig-opt');
+        picker.querySelectorAll('.sig-opt-none').forEach(o=>o.className='sig-opt-none');
+        const color=opt.dataset.color;
+        if(color==='none') opt.classList.add('active-none');
+        else if(color==='yellow') opt.classList.add('active-yellow');
+        else if(color==='red') opt.classList.add('active-red');
+      });
+    });
+  });
+
+  /* ===== INLINE SIGNAL POPOVER (home) ===== */
+  const SIG_LABELS={none:'—',yellow:'声かけて',red:'止まっている'};
+  const SIG_DOT_STYLES={
+    none:`background:var(--tx-muted);`,
+    yellow:`background:var(--sig-yellow-dot);box-shadow:0 0 4px var(--sig-yellow-dot);`,
+    red:`background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);`,
+  };
+  const SIG_BTN_CLASSES={none:'sig-none',yellow:'sig-yellow',red:'sig-red'};
+
+  function openSigPop(e, btn){
+    e.stopPropagation();
+    const pop=btn.querySelector('.sig-popover');
+    document.querySelectorAll('.sig-popover.open').forEach(p=>{ if(p!==pop) p.classList.remove('open'); });
+    pop.classList.toggle('open');
+  }
+  function setSig(e,popId,sig){
+    e.stopPropagation();
+    const pop=document.getElementById(popId);
+    pop.classList.remove('open');
+    const btn=pop.closest('.sig-inline-btn');
+    btn.className='sig-inline-btn '+SIG_BTN_CLASSES[sig];
+    btn.innerHTML=`<span class="signal-dot" style="${SIG_DOT_STYLES[sig]}"></span>${SIG_LABELS[sig]}<div class="sig-popover" id="${popId}">`+pop.innerHTML+`</div>`;
+    // 信号カウント更新（簡易デモ）
+    updateSigCounts();
+  }
+  function updateSigCounts(){
+    /* デモ用：各メンバー列のsig-countsを再集計 */
+    document.querySelectorAll('.member-col').forEach(col=>{
+      const reds=col.querySelectorAll('.sig-inline-btn.sig-red').length;
+      const yellows=col.querySelectorAll('.sig-inline-btn.sig-yellow').length;
+      const sc=col.querySelector('.sig-counts');
+      if(!sc) return;
+      let html='';
+      if(reds>0) html+=`<span class="scb-red">🔴 ${reds}</span>`;
+      if(yellows>0) html+=`<span class="scb-yellow">🟡 ${yellows}</span>`;
+      if(reds===0&&yellows===0) html=`<span style="font-size:10px;color:var(--tx-muted);">信号なし</span>`;
+      sc.innerHTML=html;
+    });
+  }
+  document.addEventListener('click',()=>{
+    document.querySelectorAll('.sig-popover.open').forEach(p=>p.classList.remove('open'));
+  });
+
+  /* ===== MANUAL ADD ===== */
+  function toggleManual(){
+    const form=document.getElementById('manualForm');
+    form.classList.toggle('open');
+    document.getElementById('manualToggle').querySelector('span:first-child').textContent=form.classList.contains('open')?'－':'＋';
+  }
+
+  /* ===== MEMO ===== */
+  function toggleMemo(btn){
+    const area=btn.closest('.rerecord-item').querySelector('.rr-memo-area');
+    area.classList.toggle('open');
+    if(area.classList.contains('open')) area.querySelector('.rr-memo-input').focus();
+  }
+
+  /* ===== MOBILE ACCORDION ===== */
+  function toggleCol(header){
+    if(window.innerWidth>700) return;
+    header.closest('.member-col').classList.toggle('expanded');
+  }
+
+  /* ===== CALENDAR ===== */
+  const START_HOUR=6, HOURS=19, HOUR_H=52;
+  const MEMBER_EVENTS={
+    noma:    [[0,9,0,90,'LPデザイン修正','design'],[0,14,0,60,'部署間定例','mtg-cross'],[1,10,0,120,'LPデザイン修正','design'],[1,13,30,60,'KPI集計','kpi'],[2,9,0,60,'バナー制作','design'],[2,14,0,90,'CF向けMTG','mtg-cross'],[3,10,0,80,'バナー制作','design'],[3,15,0,60,'KPI集計','kpi'],[4,9,30,90,'LPデザイン修正','design'],[4,14,30,45,'週次MTG','mtg-own'],[5,10,0,60,'バナー制作','design']],
+    niizuma: [[0,9,0,120,'CF向けバナー','design'],[0,14,0,60,'KK定例MTG','mtg-all'],[1,9,30,90,'CF向けバナー','design'],[1,13,0,60,'経費精算','shomu'],[2,10,0,72,'CF向けバナー','design'],[2,15,0,60,'朝会','mtg-own'],[3,9,0,80,'CF向けバナー','design'],[3,14,0,60,'全体CF MTG','mtg-all'],[4,10,0,60,'週次KPI','kpi'],[4,14,30,30,'備品発注','shomu'],[5,10,0,60,'CF向けバナー','design']],
+    furuya:  [[0,9,0,80,'DV向け資料','design'],[0,14,0,70,'月次レポート','kpi'],[1,10,0,90,'DV向け資料','design'],[2,9,0,90,'DV向け資料','design'],[2,14,0,60,'KK月次レポート','kpi'],[3,10,0,60,'DV向け資料','design'],[4,9,30,50,'月次レポート','kpi'],[5,10,0,40,'DV向け資料','design']],
+    horie:   [[0,9,0,60,'SNS投稿整理','kpi'],[0,10,30,30,'自部署朝会','mtg-own'],[1,9,0,90,'SNS投稿整理','kpi'],[1,14,0,60,'備品発注','shomu'],[2,10,0,60,'SNS投稿整理','kpi'],[2,11,30,30,'自部署MTG','mtg-own'],[3,9,0,80,'週次KPI','kpi'],[3,14,0,30,'自部署朝会','mtg-own'],[4,10,0,60,'SNS投稿整理','kpi'],[4,14,0,50,'庶務対応','shomu'],[5,10,0,60,'SNS投稿整理','kpi']],
+    ueda:    [[0,9,0,90,'KKデザインレビュー','design'],[0,14,0,60,'CF定例MTG','mtg-all'],[1,10,0,110,'KKデザインレビュー','design'],[2,9,30,60,'KKデザインレビュー','design'],[3,10,0,70,'KKデザインレビュー','design'],[3,14,0,60,'KK全体MTG','mtg-all'],[4,9,30,50,'KKデザインレビュー','design'],[5,10,0,50,'KKデザインレビュー','design']],
+    shiozaki:[],
+  };
+  /* 完了扱いのイベント（dayIndex,hour,min） */
+  const DONE_EVENTS={noma:[[0,9,0],[0,14,0]],niizuma:[[0,14,0],[1,13,0]],horie:[[0,10,30]]};
+
+  function buildCalHeader(id){
+    const head=document.getElementById('head-'+id);
+    if(!head||head.dataset.built) return;
+    head.dataset.built='1';
+    const days=[{l:'月',d:'3/9'},{l:'火',d:'3/10'},{l:'水',d:'3/11'},{l:'木',d:'3/12'},{l:'金',d:'3/13'},{l:'土',d:'3/14',t:true},{l:'日',d:'3/15'}];
+    head.innerHTML=`<div class="gcal-col-head" style="background:var(--bg-card2);"></div>`+days.map(d=>`<div class="gcal-col-head${d.t?' today':''}">${d.l}<div class="col-date">${d.d}</div></div>`).join('');
+  }
+  function buildCalGrid(id){
+    buildCalHeader(id);
+    const grid=document.getElementById('gcalGrid-'+id);
+    if(!grid||grid.dataset.built) return;
+    grid.dataset.built='1';
+    const tc=document.createElement('div');tc.className='gcal-time-col';
+    for(let h=START_HOUR;h<START_HOUR+HOURS;h++){
+      const c=document.createElement('div');c.className='gcal-hour-label';c.textContent=h+':00';tc.appendChild(c);
+    }
+    grid.appendChild(tc);
+    const evs=MEMBER_EVENTS[id]||[];
+    const doneList=(DONE_EVENTS[id]||[]);
+    for(let d=0;d<7;d++){
+      const col=document.createElement('div');
+      col.className='gcal-day-col'+(d===5?' today-col':'');
+      for(let h=0;h<HOURS;h++){
+        const slot=document.createElement('div');slot.className='gcal-hour-slot';
+        const half=document.createElement('div');half.className='gcal-half-line';slot.appendChild(half);col.appendChild(slot);
+      }
+      evs.filter(e=>e[0]===d).forEach(ev=>{
+        const[,sh,sm,dur,label,cat]=ev;
+        const topPx=(sh-START_HOUR)*HOUR_H+sm*(HOUR_H/60);
+        const heightPx=Math.max(dur*(HOUR_H/60),18);
+        const isDone=doneList.some(d=>d[0]===ev[0]&&d[1]===sh&&d[2]===sm);
+        const el=document.createElement('div');
+        el.className='gcal-event ev-'+cat+(isDone?' done':'');
+        el.style.top=topPx+'px';el.style.height=heightPx+'px';
+        el.innerHTML=label+(heightPx>28?`<br><span style="font-weight:400;font-size:9px;">${dur}m${isDone?' ✓':''}</span>`:'');
+        col.appendChild(el);
+      });
+      grid.appendChild(col);
+    }
+  }
+  buildCalGrid('noma');
+  setTimeout(()=>{
+    const body=document.querySelector('#cal-noma .gcal-body');
+    if(body) body.scrollTop=(9-START_HOUR)*HOUR_H;
+  },100);
+
+  function showCalMember(id,btn){
+    document.querySelectorAll('.cal-member-panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('cal-'+id).classList.add('active');
+    document.querySelectorAll('.cal-mb-tab').forEach(b=>b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    buildCalGrid(id);
+    setTimeout(()=>{
+      const body=document.querySelector('#cal-'+id+' .gcal-body');
+      if(body) body.scrollTop=(9-START_HOUR)*HOUR_H;
+    },30);
+  }
+</script>
+</body>
+</html>
