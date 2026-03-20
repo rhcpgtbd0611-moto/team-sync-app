@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -6,48 +6,50 @@
   <title>TeamSync</title>
   <style>
     :root {
-      --bg-base:    #0f1117;
-      --bg-card:    #1a1d27;
-      --bg-card2:   #21253a;
-      --bg-hover:   #252a3d;
-      --border:     rgba(255,255,255,.08);
-      --border-mid: rgba(255,255,255,.14);
-      --tx-primary:   #e8eaf2;
-      --tx-secondary: #8b90a8;
-      --tx-muted:     #555a72;
-      --sig-red-bg:     rgba(239,68,68,.18);
-      --sig-red-text:   #f87171;
+      --bg-base:    #f0f2f7;
+      --bg-card:    #ffffff;
+      --bg-card2:   #f5f6fa;
+      --bg-hover:   #eef0f6;
+      --border:     rgba(0,0,0,.08);
+      --border-mid: rgba(0,0,0,.13);
+      --tx-primary:   #1e2130;
+      --tx-secondary: #6b7280;
+      --tx-muted:     #9ca3af;
+      --sig-red-bg:     rgba(239,68,68,.10);
+      --sig-red-text:   #dc2626;
       --sig-red-dot:    #ef4444;
-      --sig-yellow-bg:  rgba(245,158,11,.18);
-      --sig-yellow-text:#fbbf24;
+      --sig-yellow-bg:  rgba(245,158,11,.12);
+      --sig-yellow-text:#b45309;
       --sig-yellow-dot: #f59e0b;
       --cat-design:    #f97316;
-      --cat-kpi:       #22c55e;
-      --cat-shomu:     #fde68a;
+      --cat-kpi:       #16a34a;
+      --cat-shomu:     #ca8a04;
       --cat-other:     #6b7280;
-      --cat-mtg-all:   #c4b5fd;
+      --cat-mtg-all:   #7c3aed;
       --cat-mtg-cross: #0891b2;
-      --cat-mtg-own:   #fb7185;
+      --cat-mtg-own:   #e11d48;
       --cat-private:   #374151;
       --nav-h: 52px;
       --bottom-nav-h: 60px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
     }
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic UI",sans-serif;background:var(--bg-base);color:var(--tx-primary);font-size:14px;min-height:100vh;padding-bottom:var(--bottom-nav-h);}
 
     /* ===== PC TOP NAV ===== */
-    .pc-nav{height:var(--nav-h);display:flex;align-items:center;background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 24px;gap:4px;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.4);}
+    .pc-nav{height:var(--nav-h);display:flex;align-items:center;background:var(--bg-card);border-bottom:1px solid var(--border);padding:0 24px;gap:4px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.08);}
     .nav-logo{font-size:15px;font-weight:800;color:var(--tx-primary);letter-spacing:.04em;margin-right:24px;display:flex;align-items:center;gap:8px;}
     .nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--cat-design);}
     .nav-btn{padding:8px 16px;border:none;background:none;font-size:13px;font-weight:500;color:var(--tx-secondary);cursor:pointer;border-radius:8px;transition:all .15s;}
-    .nav-btn.active{color:var(--tx-primary);background:var(--bg-hover);}
-    .nav-btn:hover:not(.active){color:var(--tx-primary);background:rgba(255,255,255,.05);}
+    .nav-btn.active{color:#f97316;background:rgba(249,115,22,.08);}
+    .nav-btn:hover:not(.active){color:var(--tx-primary);background:var(--bg-hover);}
 
     /* ===== MOBILE BOTTOM NAV ===== */
-    .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav-h);background:var(--bg-card);border-top:1px solid var(--border);z-index:200;padding:0 8px;}
+    .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav-h);background:var(--bg-card);border-top:1px solid var(--border);z-index:200;padding:0 8px;box-shadow:0 -2px 12px rgba(0,0,0,.06);}
     .mob-nav-inner{display:flex;height:100%;align-items:center;}
     .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 4px;border:none;background:none;cursor:pointer;color:var(--tx-muted);transition:color .15s;border-radius:10px;}
-    .mob-nav-btn.active{color:#fb923c;}
+    .mob-nav-btn.active{color:#f97316;}
     .mob-nav-btn .mni{font-size:20px;line-height:1;}
     .mob-nav-btn .mnl{font-size:10px;font-weight:600;letter-spacing:.02em;}
 
@@ -71,22 +73,22 @@
     .scb-yellow{background:var(--sig-yellow-bg);color:var(--sig-yellow-text);font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;}
 
     /* ===== CATEGORY COLORS ===== */
-    .cat-bg-design   {background:rgba(249,115,22,.15);}
-    .cat-bg-kpi      {background:rgba(34,197,94,.15);}
-    .cat-bg-shomu    {background:rgba(253,230,138,.12);}
-    .cat-bg-other    {background:rgba(107,114,128,.15);}
-    .cat-bg-mtg-all  {background:rgba(196,181,253,.15);}
-    .cat-bg-mtg-cross{background:rgba(8,145,178,.18);}
-    .cat-bg-mtg-own  {background:rgba(251,113,133,.15);}
-    .cat-bg-private  {background:rgba(55,65,81,.40);}
-    .cat-tx-design   {color:#fb923c;}
-    .cat-tx-kpi      {color:#4ade80;}
-    .cat-tx-shomu    {color:#fcd34d;}
-    .cat-tx-other    {color:#9ca3af;}
-    .cat-tx-mtg-all  {color:#c4b5fd;}
-    .cat-tx-mtg-cross{color:#22d3ee;}
-    .cat-tx-mtg-own  {color:#fb7185;}
-    .cat-tx-private  {color:#9ca3af;}
+    .cat-bg-design   {background:rgba(249,115,22,.10);}
+    .cat-bg-kpi      {background:rgba(22,163,74,.10);}
+    .cat-bg-shomu    {background:rgba(202,138,4,.10);}
+    .cat-bg-other    {background:rgba(107,114,128,.10);}
+    .cat-bg-mtg-all  {background:rgba(124,58,237,.10);}
+    .cat-bg-mtg-cross{background:rgba(8,145,178,.10);}
+    .cat-bg-mtg-own  {background:rgba(225,29,72,.10);}
+    .cat-bg-private  {background:rgba(55,65,81,.10);}
+    .cat-tx-design   {color:#ea6c00;}
+    .cat-tx-kpi      {color:#15803d;}
+    .cat-tx-shomu    {color:#92400e;}
+    .cat-tx-other    {color:#4b5563;}
+    .cat-tx-mtg-all  {color:#6d28d9;}
+    .cat-tx-mtg-cross{color:#0e7490;}
+    .cat-tx-mtg-own  {color:#be123c;}
+    .cat-tx-private  {color:#374151;}
 
     /* ===== SUMMARY BAR ===== */
     .summary-bar{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
@@ -111,67 +113,93 @@
     .hsl-leftover::before{background:var(--sig-yellow-dot);}
     .hsl-unscheduled::before{background:var(--tx-muted);}
 
-    .member-cols{display:flex;gap:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg-card);}
+    .member-cols{display:flex;gap:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--bg-card2);box-shadow:var(--shadow-sm);}
     .member-col{flex:1;border-right:1px solid var(--border);min-width:150px;}
     .member-col:last-child{border-right:none;}
-    .member-col-header{padding:12px 12px 8px;border-bottom:1px solid var(--border);background:var(--bg-card2);}
+    .member-col-header{padding:12px 12px 8px;border-bottom:1px solid var(--border);background:var(--bg-card);}
     .col-avatar-row{display:flex;align-items:center;gap:7px;margin-bottom:7px;}
     .avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;flex-shrink:0;}
     .col-name{font-weight:700;font-size:12px;color:var(--tx-primary);}
     .sig-counts{display:flex;gap:4px;flex-wrap:wrap;min-height:20px;align-items:center;}
 
-    .task-list{padding:4px 0;}
-    /* セクション区切り（各メンバー列内） */
-    .task-section-divider{font-size:9px;font-weight:700;color:var(--tx-muted);text-transform:uppercase;letter-spacing:.06em;padding:6px 10px 2px;border-top:1px solid var(--border);}
-    .task-section-divider:first-child{border-top:none;}
-    .task-item{padding:8px 10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:3px;cursor:pointer;transition:background .12s;position:relative;}
-    .task-item:last-child{border-bottom:none;}
-    .task-item:hover{background:var(--bg-hover);}
+    .task-list{padding:8px;}
+    .task-section-divider{font-size:9px;font-weight:700;color:var(--tx-muted);text-transform:uppercase;letter-spacing:.06em;padding:6px 2px 4px;margin-top:4px;}
+    /* タスクカード */
+    .task-item{
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:10px 12px;
+      margin-bottom:6px;
+      display:flex;flex-direction:column;gap:5px;
+      cursor:pointer;transition:box-shadow .12s, transform .1s;
+      box-shadow:var(--shadow-sm);
+      position:relative;
+      border-left:4px solid transparent;
+    }
+    .task-item:last-child{margin-bottom:0;}
+    .task-item:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+    /* 信号によるカード左ボーダー強調 */
+    .task-item.sig-card-red{border-left-color:var(--sig-red-dot);background:rgba(239,68,68,.03);}
+    .task-item.sig-card-yellow{border-left-color:var(--sig-yellow-dot);background:rgba(245,158,11,.03);}
     /* 完了タスク */
-    .task-item.done{opacity:.45;}
+    .task-item.done{opacity:.5;box-shadow:none;}
+    .task-item-top{display:flex;flex-direction:column;gap:4px;}
+    .task-item-name{font-size:12px;font-weight:600;color:var(--tx-primary);line-height:1.4;display:block;padding-right:0;}
     .task-item.done .task-item-name{text-decoration:line-through;}
-    .task-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:5px;}
-    .task-item-name{font-size:11px;font-weight:600;color:var(--tx-primary);flex:1;line-height:1.4;}
-    .task-item-time{font-size:10px;color:var(--tx-muted);white-space:nowrap;}
-    .cat-pill{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;}
+    .task-item-time{font-size:10px;color:var(--tx-muted);white-space:nowrap;margin-top:2px;}
+    /* 信号ボタンをタイトルの上に表示 */
+    .task-item .sig-inline-btn{
+      order:-1;
+      align-self:flex-start;
+      position:static;
+      display:inline-flex;align-items:center;gap:3px;
+      padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;
+      cursor:pointer;border:none;transition:all .12s;
+      white-space:nowrap;flex-shrink:0;
+    }
+    .task-item .sig-inline-btn.sig-red{background:var(--sig-red-bg);color:var(--sig-red-text);}
+    .task-item .sig-inline-btn.sig-yellow{background:var(--sig-yellow-bg);color:var(--sig-yellow-text);}
+    .task-item .sig-inline-btn.sig-none{display:none;}
+    .cat-pill{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;}
     .cat-pill-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
     .task-item-tags{display:flex;gap:3px;flex-wrap:wrap;}
-    .tag-pill{font-size:9px;color:var(--tx-secondary);background:rgba(255,255,255,.06);border:1px solid var(--border-mid);padding:1px 5px;border-radius:8px;}
+    .tag-pill{font-size:9px;color:var(--tx-secondary);background:var(--bg-card2);border:1px solid var(--border);padding:1px 6px;border-radius:8px;}
     .no-task-msg{padding:18px 12px;font-size:11px;color:var(--tx-muted);}
 
     /* ===== 信号インライン変更ポップオーバー ===== */
+    /* task-item外の汎用sig-inline-btn（将来用） */
     .sig-inline-btn{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:12px;font-size:10px;font-weight:700;cursor:pointer;border:none;transition:all .12s;position:relative;}
     .sig-inline-btn.sig-red{background:var(--sig-red-bg);color:var(--sig-red-text);}
     .sig-inline-btn.sig-yellow{background:var(--sig-yellow-bg);color:var(--sig-yellow-text);}
-    .sig-inline-btn.sig-none{background:rgba(255,255,255,.05);color:var(--tx-muted);}
-    .sig-popover{display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--bg-card2);border:1px solid var(--border-mid);border-radius:10px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:300;min-width:130px;}
+    .sig-inline-btn.sig-none{background:var(--bg-card2);color:var(--tx-muted);border:1px solid var(--border);}
+    .sig-popover{display:none;position:absolute;top:calc(100% + 4px);right:0;background:var(--bg-card);border:1px solid var(--border-mid);border-radius:10px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:300;min-width:130px;}
     .sig-popover.open{display:block;}
     .sig-pop-item{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;transition:background .1s;white-space:nowrap;}
     .sig-pop-item:hover{background:var(--bg-hover);}
     .sig-pop-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
     /* ===== COMMON PANEL ===== */
-    .panel{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+    .panel{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow-sm);}
     .panel-title{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--tx-primary);}
     .panel-sub{font-size:10px;color:var(--tx-secondary);font-weight:700;margin:12px 0 7px;padding-top:10px;border-top:1px solid var(--border);text-transform:uppercase;letter-spacing:.06em;}
 
     /* ===== FORM ===== */
     .form-group{margin-bottom:10px;}
     .form-label{font-size:10px;color:var(--tx-secondary);font-weight:700;margin-bottom:4px;display:block;letter-spacing:.04em;}
-    .form-select,.form-input{width:100%;padding:9px 12px;border:1px solid var(--border-mid);border-radius:8px;font-size:14px;color:var(--tx-primary);background:var(--bg-base);appearance:none;transition:border-color .15s;}
-    .form-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
-    .form-select:focus,.form-input:focus{outline:none;border-color:var(--cat-design);background:var(--bg-card2);}
-    .form-select option{background:var(--bg-card2);}
+    .form-select,.form-input{width:100%;padding:9px 12px;border:1px solid var(--border-mid);border-radius:8px;font-size:14px;color:var(--tx-primary);background:var(--bg-card);appearance:none;transition:border-color .15s;box-shadow:0 1px 2px rgba(0,0,0,.05);}
+    .form-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+    .form-select:focus,.form-input:focus{outline:none;border-color:var(--cat-design);box-shadow:0 0 0 3px rgba(249,115,22,.12);}
+    .form-select option{background:var(--bg-card);}
     .cat-color-badge{margin-top:5px;display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:7px;border:1px solid var(--border-mid);}
     .cat-color-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
     .cat-color-label{font-size:11px;font-weight:700;}
-    .tags-area{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;}
-    .tag-chip{background:rgba(255,255,255,.08);color:var(--tx-primary);border:1px solid var(--border-mid);border-radius:12px;padding:3px 8px;font-size:11px;display:flex;align-items:center;gap:3px;}
+    .tag-chip{background:var(--bg-card2);color:var(--tx-primary);border:1px solid var(--border-mid);border-radius:12px;padding:3px 8px;font-size:11px;display:flex;align-items:center;gap:3px;}
     .tag-x{cursor:pointer;color:var(--tx-muted);font-size:12px;}
     .tag-add-row{display:flex;gap:5px;}
-    .tag-input{flex:1;padding:8px 10px;border:1px solid var(--border-mid);border-radius:7px;font-size:14px;background:var(--bg-base);color:var(--tx-primary);}
+    .tag-input{flex:1;padding:8px 10px;border:1px solid var(--border-mid);border-radius:7px;font-size:14px;background:var(--bg-card);color:var(--tx-primary);box-shadow:0 1px 2px rgba(0,0,0,.05);}
     .tag-input:focus{outline:none;border-color:var(--cat-design);}
-    .tag-add-btn{padding:8px 11px;background:rgba(249,115,22,.2);color:#fb923c;border:1px solid rgba(249,115,22,.3);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;}
+    .tag-add-btn{padding:8px 11px;background:rgba(249,115,22,.12);color:#ea6c00;border:1px solid rgba(249,115,22,.25);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;}
 
     /* 信号ピッカー — 黄は「声かけてほしい」、赤は「止まっている」 */
     .signal-picker{display:flex;gap:6px;}
@@ -183,7 +211,7 @@
     .sig-opt.active-yellow{background:var(--sig-yellow-bg);color:var(--sig-yellow-text);border-color:var(--sig-yellow-dot);}
     .sig-opt.active-red{background:var(--sig-red-bg);color:var(--sig-red-text);border-color:var(--sig-red-dot);}
     /* 信号ルール注釈 */
-    .sig-rule-note{font-size:10px;color:var(--tx-muted);margin-top:5px;padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.03);line-height:1.5;}
+    .sig-rule-note{font-size:10px;color:var(--tx-muted);margin-top:5px;padding:5px 8px;border-radius:6px;background:var(--bg-card2);border:1px solid var(--border);line-height:1.5;}
 
     /* ===== TIMER ===== */
     .timer-box{text-align:center;padding:18px 0 14px;}
@@ -199,13 +227,13 @@
     .btn-orange{background:rgba(249,115,22,.25);color:#fb923c;border:1px solid rgba(249,115,22,.3);width:100%;margin-top:9px;padding:12px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;}
 
     /* ===== MANUAL ADD ===== */
-    .manual-toggle{display:flex;align-items:center;gap:7px;padding:10px 13px;background:var(--bg-base);border-radius:9px;cursor:pointer;border:1px solid var(--border-mid);font-size:13px;font-weight:600;color:var(--tx-secondary);transition:all .12s;}
-    .manual-toggle:hover{border-color:rgba(249,115,22,.4);color:#fb923c;}
+    .manual-toggle{display:flex;align-items:center;gap:7px;padding:10px 13px;background:var(--bg-card2);border-radius:9px;cursor:pointer;border:1px solid var(--border-mid);font-size:13px;font-weight:600;color:var(--tx-secondary);transition:all .12s;}
+    .manual-toggle:hover{border-color:rgba(249,115,22,.4);color:#ea6c00;}
     .manual-form{margin-top:10px;display:none;}
     .manual-form.open{display:block;}
-    .note-area{width:100%;padding:9px 12px;border:1px solid var(--border-mid);border-radius:8px;font-size:13px;resize:vertical;font-family:inherit;background:var(--bg-base);color:var(--tx-primary);min-height:56px;}
+    .note-area{width:100%;padding:9px 12px;border:1px solid var(--border-mid);border-radius:8px;font-size:13px;resize:vertical;font-family:inherit;background:var(--bg-card);color:var(--tx-primary);min-height:56px;}
     .note-area:focus{outline:none;border-color:var(--cat-design);}
-    .cal-note{margin-top:7px;padding:8px 11px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:7px;font-size:10px;color:#fcd34d;}
+    .cal-note{margin-top:7px;padding:8px 11px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.20);border-radius:7px;font-size:10px;color:#92400e;}
 
     /* ===== RERECORD ===== */
     .rerecord-list{display:flex;flex-direction:column;gap:5px;}
@@ -241,7 +269,7 @@
     .cal-mb-tab:hover:not(.active){background:var(--bg-hover);color:var(--tx-primary);}
     .cal-member-panel{display:none;}
     .cal-member-panel.active{display:block;}
-    .gcal-outer{background:var(--bg-card);border-radius:14px;overflow:hidden;border:1px solid var(--border);}
+    .gcal-outer{background:var(--bg-card);border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
     .gcal-header-row{display:grid;grid-template-columns:48px repeat(7,1fr);border-bottom:1px solid var(--border);background:var(--bg-card2);position:sticky;top:var(--nav-h);z-index:10;}
     .gcal-col-head{padding:9px 5px;text-align:center;font-size:10px;font-weight:700;color:var(--tx-secondary);border-right:1px solid var(--border);}
     .gcal-col-head:last-child{border-right:none;}
@@ -254,27 +282,26 @@
     .gcal-day-col{border-right:1px solid var(--border);position:relative;}
     .gcal-day-col:last-child{border-right:none;}
     .gcal-day-col.today-col{background:rgba(249,115,22,.03);}
-    .gcal-hour-slot{height:52px;border-bottom:1px solid rgba(255,255,255,.04);position:relative;}
-    .gcal-half-line{position:absolute;top:26px;left:0;right:0;border-top:1px dashed rgba(255,255,255,.04);}
+    .gcal-hour-slot{height:52px;border-bottom:1px solid rgba(0,0,0,.05);position:relative;}
+    .gcal-half-line{position:absolute;top:26px;left:0;right:0;border-top:1px dashed rgba(0,0,0,.05);}
     .gcal-event{position:absolute;left:2px;right:2px;border-radius:5px;padding:3px 4px;font-size:10px;font-weight:600;overflow:hidden;cursor:pointer;transition:opacity .12s;line-height:1.3;border-left-width:3px;border-left-style:solid;}
     .gcal-event:hover{opacity:.75;}
-    .gcal-event.ev-design   {background:rgba(249,115,22,.22);color:#fb923c;border-left-color:#f97316;}
-    .gcal-event.ev-kpi      {background:rgba(34,197,94,.18);color:#4ade80;border-left-color:#22c55e;}
-    .gcal-event.ev-shomu    {background:rgba(253,230,138,.14);color:#fcd34d;border-left-color:#fde68a;}
-    .gcal-event.ev-other    {background:rgba(107,114,128,.20);color:#9ca3af;border-left-color:#6b7280;}
-    .gcal-event.ev-mtg-all  {background:rgba(196,181,253,.18);color:#c4b5fd;border-left-color:#a78bfa;}
-    .gcal-event.ev-mtg-cross{background:rgba(8,145,178,.22);color:#22d3ee;border-left-color:#0891b2;}
-    .gcal-event.ev-mtg-own  {background:rgba(251,113,133,.18);color:#fb7185;border-left-color:#fb7185;}
-    .gcal-event.ev-private  {background:rgba(55,65,81,.50);color:#6b7280;border-left-color:#374151;}
-    /* 完了イベント */
+    .gcal-event.ev-design   {background:rgba(249,115,22,.15);color:#c2410c;border-left-color:#f97316;}
+    .gcal-event.ev-kpi      {background:rgba(22,163,74,.12);color:#15803d;border-left-color:#16a34a;}
+    .gcal-event.ev-shomu    {background:rgba(202,138,4,.12);color:#92400e;border-left-color:#ca8a04;}
+    .gcal-event.ev-other    {background:rgba(107,114,128,.12);color:#4b5563;border-left-color:#6b7280;}
+    .gcal-event.ev-mtg-all  {background:rgba(124,58,237,.12);color:#5b21b6;border-left-color:#7c3aed;}
+    .gcal-event.ev-mtg-cross{background:rgba(8,145,178,.12);color:#0e7490;border-left-color:#0891b2;}
+    .gcal-event.ev-mtg-own  {background:rgba(225,29,72,.12);color:#be123c;border-left-color:#e11d48;}
+    .gcal-event.ev-private  {background:rgba(55,65,81,.12);color:#374151;border-left-color:#374151;}
     .gcal-event.done{opacity:.35;}
     .gcal-unreg{margin-top:14px;padding:13px 15px;background:var(--bg-card);border-radius:12px;border:1px solid var(--border);}
     .gcal-unreg-title{font-size:10px;font-weight:700;color:var(--tx-secondary);margin-bottom:9px;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.06em;}
     .gcal-unreg-title::before{content:'';display:inline-block;width:6px;height:6px;background:var(--sig-yellow-dot);border-radius:50%;box-shadow:0 0 5px var(--sig-yellow-dot);}
     .unreg-chips{display:flex;gap:7px;flex-wrap:wrap;}
-    .unreg-chip{display:flex;align-items:center;gap:6px;background:var(--bg-base);border:1px dashed var(--border-mid);border-radius:9px;padding:6px 11px;font-size:11px;cursor:pointer;color:var(--tx-secondary);transition:all .12s;}
-    .unreg-chip:hover{border-color:rgba(249,115,22,.4);color:#fb923c;background:rgba(249,115,22,.05);}
-    .unreg-plus{font-size:13px;color:#fb923c;font-weight:700;}
+    .unreg-chip{display:flex;align-items:center;gap:6px;background:var(--bg-card);border:1.5px dashed var(--border-mid);border-radius:9px;padding:6px 11px;font-size:11px;cursor:pointer;color:var(--tx-secondary);transition:all .12s;box-shadow:var(--shadow-sm);}
+    .unreg-chip:hover{border-color:rgba(249,115,22,.5);color:#ea6c00;background:rgba(249,115,22,.04);}
+    .unreg-plus{font-size:13px;color:#ea6c00;font-weight:700;}
     .unreg-chip-name{font-weight:600;color:var(--tx-primary);}
     .unreg-chip-sub{font-size:9px;color:var(--tx-muted);}
 
@@ -289,7 +316,7 @@
     .period-btn.active{background:rgba(249,115,22,.2);color:#fb923c;}
 
     .analysis-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
-    .analysis-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;}
+    .analysis-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow-sm);}
     .ac-title{font-size:11px;font-weight:700;color:var(--tx-secondary);margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em;}
     .kpi-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
     .kpi-box{flex:1;min-width:100px;background:var(--bg-card2);border:1px solid var(--border);border-radius:10px;padding:13px;text-align:center;}
@@ -316,8 +343,9 @@
     .empty-state .es-sub{font-size:12px;margin-top:5px;}
 
     ::-webkit-scrollbar{width:5px;height:5px;}
-    ::-webkit-scrollbar-track{background:transparent;}
-    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px;}
+    ::-webkit-scrollbar-track{background:var(--bg-card2);}
+    ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:3px;}
+    ::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);}
 
     /* ===== RESPONSIVE: TABLET ===== */
     @media(max-width:1000px){
@@ -413,7 +441,7 @@
         </div>
         <div class="task-list">
           <div class="task-section-divider">進行中</div>
-          <div class="task-item">
+          <div class="task-item sig-card-red">
             <div class="task-item-top">
               <span class="task-item-name">LPデザイン修正</span>
               <button class="sig-inline-btn sig-red" onclick="openSigPop(event,this)">
@@ -460,7 +488,7 @@
         </div>
         <div class="task-list">
           <div class="task-section-divider">進行中</div>
-          <div class="task-item">
+          <div class="task-item sig-card-yellow">
             <div class="task-item-top">
               <span class="task-item-name">CF向けバナー制作</span>
               <button class="sig-inline-btn sig-yellow" onclick="openSigPop(event,this)">
@@ -498,7 +526,7 @@
         </div>
         <div class="task-list">
           <div class="task-section-divider">進行中</div>
-          <div class="task-item">
+          <div class="task-item sig-card-red">
             <div class="task-item-top">
               <span class="task-item-name">DV向け資料作成</span>
               <button class="sig-inline-btn sig-red" onclick="openSigPop(event,this)">
@@ -514,7 +542,7 @@
             <div class="task-item-tags"><span class="tag-pill">#DV</span></div>
             <div class="task-item-time">—</div>
           </div>
-          <div class="task-item">
+          <div class="task-item sig-card-yellow">
             <div class="task-item-top">
               <span class="task-item-name">月次レポート更新</span>
               <button class="sig-inline-btn sig-yellow" onclick="openSigPop(event,this)">
@@ -571,7 +599,7 @@
         </div>
         <div class="task-list">
           <div class="task-section-divider">進行中</div>
-          <div class="task-item">
+          <div class="task-item sig-card-yellow">
             <div class="task-item-top">
               <span class="task-item-name">KK向けデザインレビュー</span>
               <button class="sig-inline-btn sig-yellow" onclick="openSigPop(event,this)">
@@ -618,7 +646,7 @@
           <div class="sig-counts"><span class="scb-red">🔴 1</span></div>
         </div>
         <div class="task-list">
-          <div class="task-item">
+          <div class="task-item sig-card-red">
             <div class="task-item-top"><span class="task-item-name">KK向け展示会パネル</span>
               <button class="sig-inline-btn sig-red" onclick="openSigPop(event,this)">
                 <span class="signal-dot" style="background:var(--sig-red-dot);box-shadow:0 0 4px var(--sig-red-dot);"></span>止まっている
